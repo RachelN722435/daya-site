@@ -1,17 +1,17 @@
 /* ==========================================================================
    Daya — styles
-   Palette: black, white and grey. Signature: the arch.
+   Palette: burgundy wine, deep wine ink, warm cream paper. Signature: the arch.
    ========================================================================== */
 
 :root {
-  --ink: #111111;          /* text + dark surfaces */
-  --ink-soft: #5E5E5E;     /* muted text */
-  --berry: #262626;        /* primary (charcoal) */
-  --berry-deep: #000000;   /* hover shade of the primary */
-  --paper: #FAFAFA;        /* page background */
-  --lilac: #EEEEEE;        /* tinted sections */
-  --white: #FFFFFF;        /* cards + light text */
-  --line: #D9D9D9;
+  --ink: #2A1A1D;          /* text + dark surfaces */
+  --ink-soft: #6A5558;     /* muted text */
+  --berry: #7A2E3B;        /* primary (burgundy wine) */
+  --berry-deep: #5E222D;   /* hover shade of the primary */
+  --paper: #FAF5F2;        /* page background */
+  --lilac: #F1E3DE;        /* tinted sections */
+  --white: #FFFBF9;        /* cards + light text */
+  --line: #E3D2CB;
 
   --font-display: "Young Serif", Georgia, "Times New Roman", serif;
   --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -116,7 +116,7 @@ h1, h2, h3, .logo, .foot-logo, .drawer-title { font-family: var(--font-display);
 @keyframes pop { 40% { transform: scale(1.18); } }
 
 /* ---------- Drawers ---------- */
-.scrim { position: fixed; inset: 0; z-index: 50; background: rgba(17, 17, 17, .5); opacity: 0; transition: opacity .25s; }
+.scrim { position: fixed; inset: 0; z-index: 50; background: rgba(42, 26, 29, .5); opacity: 0; transition: opacity .25s; }
 .scrim.show { opacity: 1; }
 .drawer {
   position: fixed; top: 0; bottom: 0; z-index: 60; width: min(90vw, 390px);
@@ -204,7 +204,7 @@ h1, h2, h3, .logo, .foot-logo, .drawer-title { font-family: var(--font-display);
 }
 .save {
   position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; display: grid; place-items: center;
-  background: var(--white); border: 0; border-radius: 50%; color: var(--ink); box-shadow: 0 2px 10px rgba(17,17,17,.18);
+  background: var(--white); border: 0; border-radius: 50%; color: var(--ink); box-shadow: 0 2px 10px rgba(42,26,29,.18);
   transition: background-color .2s, color .2s, transform .2s;
 }
 .save:hover { transform: scale(1.06); color: var(--berry); }
@@ -250,7 +250,7 @@ select, input, textarea {
   background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px;
 }
 textarea { min-height: 110px; resize: vertical; }
-select:focus, input:focus, textarea:focus { border-color: var(--berry); outline: 3px solid rgba(38,38,38,.2); outline-offset: 0; }
+select:focus, input:focus, textarea:focus { border-color: var(--berry); outline: 3px solid rgba(122,46,59,.2); outline-offset: 0; }
 .result-count { margin: 0 0 18px; color: var(--ink-soft); font-weight: 600; }
 .empty { text-align: center; padding: 48px 20px; background: var(--white); border-radius: 22px; }
 .empty h2 { font-size: 1.6rem; }
@@ -280,16 +280,16 @@ tbody th { font-weight: 800; }
 .row-2 { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
 .row-3 { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); }
 .hint { margin: 0; font-size: .9rem; color: var(--ink-soft); }
-.error { margin: 0; padding: 12px 16px; background: #EEEEEE; color: #111111; border-radius: 12px; font-weight: 600; }
+.error { margin: 0; padding: 12px 16px; background: #F1E3DE; color: #5E222D; border-radius: 12px; font-weight: 600; }
 .notice { margin: 0 0 16px; padding: 12px 16px; background: var(--lilac); border-radius: 12px; }
 .result { background: var(--ink); color: var(--white); border-radius: 26px; padding: 28px; }
 .result a:not(.btn) { color: var(--lilac); }
 .result-label { margin: 0; font-size: .95rem; color: var(--lilac); font-weight: 700; }
 .result-size { font-family: var(--font-display); font-size: clamp(2rem, 6vw, 2.8rem); line-height: 1.1; margin: 2px 0 8px; }
-.result-alt { margin: 0 0 12px; color: #D9D9D9; }
+.result-alt { margin: 0 0 12px; color: #EBD5D2; }
 .result-note { margin: 16px 0 0; padding: 12px 14px; background: rgba(255,255,255,.1); border-radius: 12px; font-size: .98rem; }
 .result-rule { border: 0; border-top: 1px solid rgba(255,255,255,.25); margin: 22px 0; }
-.result-fine { margin: 20px 0 0; font-size: .9rem; color: #CFCFCF; }
+.result-fine { margin: 20px 0 0; font-size: .9rem; color: #E0C9C6; }
 .result-placeholder { background: var(--lilac); color: var(--ink-soft); border-radius: 26px; padding: 28px; }
 .result-placeholder p { margin: 0; }
 
@@ -297,11 +297,11 @@ tbody th { font-weight: 800; }
 .stylist-band { background: var(--berry); color: var(--white); padding: 52px 0; margin-top: 40px; }
 .band-inner { display: grid; gap: 24px; align-items: center; }
 .stylist-band h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin-bottom: 8px; }
-.stylist-band p { margin: 0; max-width: 52ch; color: #E4E4E4; }
+.stylist-band p { margin: 0; max-width: 52ch; color: #F3E1DD; }
 .band-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
 /* ---------- Footer ---------- */
-.site-footer { background: var(--ink); color: #CFCFCF; padding: 36px 0 44px; }
+.site-footer { background: var(--ink); color: #E0C9C6; padding: 36px 0 44px; }
 .foot-inner { display: grid; gap: 10px; }
 .foot-logo { font-size: 2rem; color: var(--white); margin: 0; }
 .foot-tag { margin: 0 0 8px; }
