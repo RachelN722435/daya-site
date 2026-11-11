@@ -244,6 +244,24 @@ h1, h2, h3, .logo, .foot-logo, .drawer-title { font-family: var(--font-display);
 .prose h2 { font-size: 1.5rem; margin: 1.8em 0 .5em; }
 .back { margin-top: 36px; font-weight: 700; }
 
+/* ---------- Occasion and body type steps ---------- */
+.steps { display: grid; gap: 26px; margin: 12px 0 28px; }
+.step-title { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; margin: 0 0 14px; }
+.step-num {
+  display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--berry); color: var(--white); font-family: var(--font-body); font-size: .95rem; font-weight: 800;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+  min-height: 46px; padding: 8px 20px; border-radius: 999px; cursor: pointer;
+  background: var(--white); color: var(--ink); border: 1.5px solid var(--ink); font: inherit; font-weight: 700;
+}
+.chip:hover { background: var(--lilac); }
+.chip[aria-pressed="true"] { background: var(--berry); border-color: var(--berry); color: var(--white); }
+.step-note { margin: 14px 0 0; }
+.step-prompt { margin: 0; color: var(--ink-soft); font-weight: 600; }
+.step-prompt:empty { display: none; }
+
 /* ---------- Page headers + filters ---------- */
 .page-head { padding: 44px 0 20px; }
 .filters {
