@@ -110,10 +110,10 @@
       '<button type="button" class="menu-btn" id="menu-open" aria-controls="menu-drawer" aria-expanded="false">' + ICON_MENU + '<span>Browse</span></button>' +
       '<a class="logo" href="index.html" aria-label="Daya, home">Daya</a>' +
       '<div class="header-right">' +
-        '<nav class="top-links" aria-label="Main"><a href="looks.html">Looks</a><a href="journal.html">Journal</a></nav>' +
         '<button type="button" class="bag-btn" id="bag-open" aria-controls="bag-drawer" aria-expanded="false" aria-label="Your saved looks">' + ICON_BAG + '<span class="bag-count" id="bag-count" hidden>0</span></button>' +
       '</div>' +
     '</header>' +
+    '<div class="styling-strip"><a href="stylist.html#book">One-on-one personal styling and guidance <span aria-hidden="true">→</span></a></div>' +
 
     '<div class="scrim" id="scrim" hidden></div>' +
 
@@ -141,17 +141,21 @@
   var wa = CFG.whatsapp ? "https://wa.me/" + String(CFG.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent("Hi Daya, I'd like some help finding an outfit.") : "stylist.html#chat";
   var waAttrs = CFG.whatsapp ? ' target="_blank" rel="noopener noreferrer"' : "";
 
-  var footerHTML =
+  var bandHTML =
     '<section class="stylist-band" aria-labelledby="band-title">' +
       '<div class="wrap band-inner">' +
         '<div><h2 id="band-title">Didn’t find what you were looking for?</h2>' +
         '<p>That’s okay. Tell us what you’re dressing for and a stylist will find options that fit you.</p></div>' +
         '<div class="band-actions">' +
-          '<a class="btn btn-gold" href="stylist.html#book">Book a stylist</a>' +
-          '<a class="btn btn-outline-light" href="' + wa + '"' + waAttrs + '>Chat with a stylist</a>' +
+          '<a class="btn btn-gold" href="' + wa + '"' + waAttrs + '>Chat with a stylist</a>' +
         '</div>' +
       '</div>' +
-    '</section>' +
+    '</section>';
+
+  var showBand = document.body.getAttribute("data-page") === "looks";
+
+  var footerHTML =
+    (showBand ? bandHTML : "") +
     '<footer class="site-footer"><div class="wrap foot-inner">' +
       '<p class="foot-logo">Daya</p>' +
       '<p class="foot-tag">Womenswear. Style for your real life.</p>' +
