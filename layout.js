@@ -80,16 +80,15 @@
     return (
       '<article class="card" data-look="' + esc(look.id) + '">' +
         '<div class="card-media">' +
-          '<img src="' + esc(look.image) + '" alt="' + esc(look.name) + '" loading="lazy" width="600" height="800">' +
+          '<a class="card-img-link" href="look.html?id=' + encodeURIComponent(look.id) + '" aria-label="View ' + esc(look.name) + '"><img src="' + esc(look.image) + '" alt="' + esc(look.name) + '" loading="lazy" width="600" height="800"></a>' +
           (d ? '<span class="deal-badge">' + d + '% off</span>' : "") +
           '<button type="button" class="save' + (saved ? " is-saved" : "") + '" data-save="' + esc(look.id) + '" aria-pressed="' + saved + '" aria-label="' + (saved ? "Remove " : "Save ") + esc(look.name) + (saved ? " from your bag" : " to your bag") + '">' + ICON_BAG + '</button>' +
         '</div>' +
         '<div class="card-body">' +
           '<p class="card-meta">' + esc(occasionName(look.occasion)) + (look.brand ? " · " + esc(look.brand) : "") + '</p>' +
-          '<h3 class="card-title">' + esc(look.name) + '</h3>' +
+          '<h3 class="card-title"><a href="look.html?id=' + encodeURIComponent(look.id) + '">' + esc(look.name) + '</a></h3>' +
           '<p class="card-price"><span class="now">' + money(look.price, look.currency) + '</span>' +
             (look.was ? ' <s class="was"><span class="sr-only">was </span>' + money(look.was, look.currency) + '</s>' : "") + '</p>' +
-          link +
         '</div>' +
       '</article>'
     );
