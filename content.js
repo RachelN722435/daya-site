@@ -37,6 +37,13 @@ window.DAYA = {
       "You are worthy of good things, and that includes a great fit."
     ],
 
+    /* PRICES AND IMAGES
+       usdToNgn    → rough rate used only to sort mixed dollar and naira prices
+       imageResize → set to true ONLY if your Supabase project is on a paid plan
+                     that supports image resizing. It makes the site load much faster. */
+    usdToNgn: 1500,
+    imageResize: false,
+
     /* STYLIST CONTACT — fill these in so "Book" and "Chat" work.
        whatsapp: country code + number, digits only, e.g. "2348012345678"
        email: where booking requests should be sent */
