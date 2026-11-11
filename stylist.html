@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book a stylist | Daya</title>
+  <meta name="description" content="Tell us what you're dressing for and a Daya stylist will find options that fit.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Young+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="stylist">
+  <main id="main">
+    <div class="wrap">
+      <div class="page-head">
+        <h1 class="page-title" id="book">Book a stylist</h1>
+        <p class="lede">Tell us what you’re dressing for and we’ll come back to you with options that fit your body, budget and taste.</p>
+      </div>
+
+      <div class="two-col" style="padding-bottom: 24px;">
+        <form class="panel form-grid" id="book-form">
+          <p class="notice" id="setup-note" hidden><strong>Owner note:</strong> add your WhatsApp number or email in <code>js/content.js</code> so requests reach you.</p>
+          <p class="notice" id="prefill-note" hidden></p>
+          <div class="field"><label for="s-name">Your name</label><input id="s-name" name="name" autocomplete="name" required></div>
+          <div class="field"><label for="s-contact">Phone or email</label><input id="s-contact" name="contact" autocomplete="email" required>
+            <p class="hint">So your stylist can reply to you.</p></div>
+          <div class="row-2">
+            <div class="field"><label for="s-occasion">Dressing for</label>
+              <select id="s-occasion" name="occasion"><option value="">Not sure yet</option></select></div>
+            <div class="field"><label for="s-body">Body type</label>
+              <select id="s-body" name="body"><option value="">Not sure yet</option></select></div>
+          </div>
+          <div class="row-2">
+            <div class="field"><label for="s-budget">Budget</label><input id="s-budget" name="budget" placeholder="e.g. ₦80,000"></div>
+            <div class="field"><label for="s-date">Needed by</label><input id="s-date" name="date" type="date"></div>
+          </div>
+          <div class="field"><label for="s-notes">Anything else we should know?</label>
+            <textarea id="s-notes" name="notes" placeholder="Colours you love, things you avoid, the dress code…"></textarea></div>
+          <button class="btn btn-primary" type="submit">Send my request</button>
+          <p class="notice" id="form-msg" role="status" hidden></p>
+        </form>
+
+        <div>
+          <div class="panel" id="chat">
+            <h2 class="section-title">Prefer to chat?</h2>
+            <p>Message a stylist directly and talk it through.</p>
+            <a class="btn btn-ghost" id="chat-link" href="#chat">Chat with a stylist</a>
+            <p class="hint" id="chat-fallback" hidden>Chat will be available soon. In the meantime, send us a request using the form.</p>
+          </div>
+          <div class="result-placeholder" style="margin-top:20px">
+            <p><strong>What happens next?</strong></p>
+            <p>A stylist reads your request, picks looks that suit you, and replies with options and links.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="js/content.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/pages.js"></script>
+</body>
+</html>

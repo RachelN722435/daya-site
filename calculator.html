@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Body calculator | Daya</title>
+  <meta name="description" content="Enter your measurements to find your size in US, UK or EU and your body type.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Young+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="calculator">
+  <main id="main">
+    <div class="wrap">
+      <div class="page-head">
+        <h1 class="page-title">Body calculator</h1>
+        <p class="lede">Enter three measurements to get your size and your body type. Need help measuring? See the <a href="size-chart.html#measure">size chart</a>.</p>
+      </div>
+
+      <div class="two-col" style="padding-bottom: 24px;">
+        <form class="panel form-grid" id="calc-form" novalidate>
+          <div class="row-2">
+            <div class="field"><label for="c-unit">Measuring in</label>
+              <select id="c-unit" name="unit"><option value="cm">Centimetres</option><option value="in">Inches</option></select></div>
+            <div class="field"><label for="c-region">Show my size in</label>
+              <select id="c-region" name="region"><option value="uk">UK</option><option value="us">US</option><option value="eu">EU</option></select></div>
+          </div>
+          <div class="row-3">
+            <div class="field"><label for="c-bust">Bust</label><input id="c-bust" name="bust" type="number" inputmode="decimal" min="0" step="0.1" required></div>
+            <div class="field"><label for="c-waist">Waist</label><input id="c-waist" name="waist" type="number" inputmode="decimal" min="0" step="0.1" required></div>
+            <div class="field"><label for="c-hip">Hips</label><input id="c-hip" name="hip" type="number" inputmode="decimal" min="0" step="0.1" required></div>
+          </div>
+          <div class="field"><label for="c-height">Height (optional)</label>
+            <input id="c-height" name="height" type="number" inputmode="decimal" min="0" step="0.1">
+            <p class="hint">Same unit as above. We use it to suggest petite or tall looks.</p></div>
+          <p class="error" id="calc-error" role="alert" hidden></p>
+          <button class="btn btn-primary" type="submit">Get my size</button>
+        </form>
+
+        <div>
+          <div class="result" id="calc-result" aria-live="polite" hidden></div>
+          <div class="result-placeholder" id="calc-placeholder"><p>Your size and body type will show up here once you enter your measurements.</p></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="js/content.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/pages.js"></script>
+  <script>
+    /* hide the placeholder once a result is shown */
+    (function () {
+      var f = document.getElementById("calc-form");
+      f.addEventListener("submit", function () {
+        setTimeout(function () {
+          document.getElementById("calc-placeholder").hidden = !document.getElementById("calc-result").hidden;
+        }, 0);
+      });
+    })();
+  </script>
+</body>
+</html>
