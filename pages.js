@@ -45,86 +45,94 @@
       if (j) j.innerHTML = D.articles.slice(0, 3).map(articleCard).join("");
     },
 
-    /* ---------------- LOOKS (filters) ---------------- */
+    /* ---------------- LOOKS (pick occasion, then body type) ---------------- */
     looks: function () {
-      var selBody = $("#f-body"), selOcc = $("#f-occasion"), selCol = $("#f-collection");
-      var inSearch = $("#f-search"), selSort = $("#f-sort");
-      inSearch.value = params.get("q") || "";
-      selSort.value = params.get("sort") || "";
-      if (selSort.value !== (params.get("sort") || "")) selSort.value = "";
-      function ngn(l) { return l.currency === "USD" ? l.price * (D.config.usdToNgn || 1500) : l.price; }
-      function haystack(l) {
-        return [l.name, l.brand, U.occasionName(l.occasion), (l.bodies || []).map(U.bodyName).join(" "), l.fabric, l.styling].join(" ").toLowerCase();
+      function valid(list, slug) {
+        for (var i = 0; i < list.length; i++) if (list[i].slug === slug) return slug;
+        return "";
       }
-      selBody.innerHTML = '<option value="">All body types</option>' + D.bodyTypes.map(function (b) {
-        return '<option value="' + b.slug + '">' + esc(b.name) + '</option>';
-      }).join("");
-      selOcc.innerHTML = '<option value="">All occasions</option>' + D.occasions.map(function (o) {
-        return '<option value="' + o.slug + '">' + esc(o.name) + '</option>';
-      }).join("");
-      selBody.value = params.get("body") || "";
-      selOcc.value = params.get("occasion") || "";
-      selCol.value = params.get("collection") || "";
-      if (selBody.value !== (params.get("body") || "")) selBody.value = "";
-      if (selOcc.value !== (params.get("occasion") || "")) selOcc.value = "";
-      if (selCol.value !== (params.get("collection") || "")) selCol.value = "";
-
+      var state = {
+        occ: valid(D.occasions, params.get("occasion") || ""),
+        body: valid(D.bodyTypes, params.get("body") || ""),
+        col: params.get("collection") || ""
+      };
       var TITLES = { best: "Best looks", affordable: "Most affordable", deals: "Best deals" };
+      if (!TITLES[state.col]) state.col = "";
+
+      var occWrap = $("#occ-chips"), bodyWrap = $("#body-chips");
+
+      function chips(list, current) {
+        return list.map(function (x) {
+          return '<button type="button" class="chip" data-slug="' + x.slug + '" aria-pressed="' + (x.slug === current) + '">' + esc(x.name) + '</button>';
+        }).join("");
+      }
 
       function render() {
-        var body = selBody.value, occ = selOcc.value, col = selCol.value;
-        var list = D.looks.slice();
-        if (col === "best") list = best().filter(function (l) { return list.indexOf(l) !== -1; });
-        if (col === "affordable") list = affordable();
-        if (col === "deals") list = deals();
-        if (body) list = list.filter(function (l) { return l.bodies.indexOf(body) !== -1; });
-        if (occ) list = list.filter(function (l) { return l.occasion === occ; });
+        occWrap.innerHTML = chips(D.occasions, state.occ);
+        bodyWrap.innerHTML = chips(D.bodyTypes, state.body);
+        $("#step-body").hidden = !(state.occ || state.body || state.col);
 
-        var term = inSearch.value.trim().toLowerCase();
-        if (term) {
-          var words = term.split(/\s+/);
-          list = list.filter(function (l) {
-            var h = haystack(l);
-            return words.every(function (w) { return h.indexOf(w) !== -1; });
-          });
+        var ready = (state.occ && state.body) || state.col;
+        var prompt = "";
+        if (!ready) {
+          if (!state.occ && !state.body) prompt = "Start by choosing the occasion you’re dressing for.";
+          else if (state.occ) prompt = "Now choose your body type to see your looks.";
+          else prompt = "Now choose the occasion to see your looks.";
         }
-        var sort = selSort.value;
-        if (sort === "low") list.sort(function (a, b) { return ngn(a) - ngn(b); });
-        if (sort === "high") list.sort(function (a, b) { return ngn(b) - ngn(a); });
-        if (sort === "discount") list.sort(function (a, b) { return U.discount(b) - U.discount(a); });
+        $("#looks-prompt").textContent = prompt;
 
-        var title = TITLES[col] || "All looks";
+        var title = TITLES[state.col] || "All looks";
         var bits = [];
-        if (body) bits.push(U.bodyName(body));
-        if (occ) bits.push(U.occasionName(occ));
-        $("#looks-title").textContent = bits.length ? (col ? title + ": " : "") + bits.join(", ") : title;
+        if (state.body) bits.push(U.bodyName(state.body));
+        if (state.occ) bits.push(U.occasionName(state.occ));
+        $("#looks-title").textContent = bits.length ? (state.col ? title + ": " : "") + bits.join(", ") : title;
 
         var desc = "";
-        for (var i = 0; i < D.bodyTypes.length; i++) if (D.bodyTypes[i].slug === body) desc = D.bodyTypes[i].desc;
+        for (var i = 0; i < D.bodyTypes.length; i++) if (D.bodyTypes[i].slug === state.body) desc = D.bodyTypes[i].desc;
         $("#looks-desc").textContent = desc || "Outfits chosen for different bodies and moments. Save the ones you love to your bag.";
 
-        $("#looks-count").textContent = list.length + (list.length === 1 ? " look" : " looks") + (term ? " for “" + inSearch.value.trim() + "”" : "");
-        var grid = $("#looks-grid");
-        if (list.length) {
-          grid.innerHTML = list.map(U.lookCard).join("");
-          $("#looks-empty").hidden = true;
-        } else {
+        var grid = $("#looks-grid"), count = $("#looks-count"), empty = $("#looks-empty");
+        if (!ready) {
           grid.innerHTML = "";
-          $("#looks-empty").hidden = false;
+          count.textContent = "";
+          empty.hidden = true;
+        } else {
+          var list = D.looks.slice();
+          if (state.col === "best") list = best();
+          if (state.col === "affordable") list = affordable();
+          if (state.col === "deals") list = deals();
+          if (state.body) list = list.filter(function (l) { return l.bodies.indexOf(state.body) !== -1; });
+          if (state.occ) list = list.filter(function (l) { return l.occasion === state.occ; });
+          count.textContent = list.length + (list.length === 1 ? " look" : " looks");
+          if (list.length) {
+            grid.innerHTML = list.map(U.lookCard).join("");
+            empty.hidden = true;
+          } else {
+            grid.innerHTML = "";
+            empty.hidden = false;
+          }
         }
 
         var q = new URLSearchParams();
-        if (body) q.set("body", body);
-        if (occ) q.set("occasion", occ);
-        if (col) q.set("collection", col);
-        if (term) q.set("q", inSearch.value.trim());
-        if (sort) q.set("sort", sort);
+        if (state.occ) q.set("occasion", state.occ);
+        if (state.body) q.set("body", state.body);
+        if (state.col) q.set("collection", state.col);
         var qs = q.toString();
         try { history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "")); } catch (e) { /* ignore */ }
       }
-      [selBody, selOcc, selCol, selSort].forEach(function (s) { s.addEventListener("change", render); });
-      inSearch.addEventListener("input", render);
-      $("#f-reset").addEventListener("click", function () { selBody.value = ""; selOcc.value = ""; selCol.value = ""; selSort.value = ""; inSearch.value = ""; render(); });
+
+      function pick(key) {
+        return function (e) {
+          var b = e.target.closest(".chip");
+          if (!b) return;
+          var slug = b.getAttribute("data-slug");
+          state[key] = state[key] === slug ? "" : slug;
+          render();
+        };
+      }
+      occWrap.addEventListener("click", pick("occ"));
+      bodyWrap.addEventListener("click", pick("body"));
+      $("#f-reset").addEventListener("click", function () { state.occ = ""; state.body = ""; state.col = ""; render(); });
       render();
     },
 
