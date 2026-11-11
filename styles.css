@@ -309,6 +309,25 @@ tbody th { font-weight: 800; }
 .foot-nav a { color: var(--white); text-decoration: none; padding: 6px 0; }
 .foot-nav a:hover { color: var(--lilac); text-decoration: underline; }
 
+
+/* ---------- Single look page ---------- */
+.card-img-link { display: block; }
+.card-title a { color: inherit; text-decoration: none; }
+.card-title a:hover { color: var(--berry); text-decoration: underline; }
+.look-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 36px 0 20px; align-items: start; }
+.look-media { position: relative; max-width: 420px; width: 100%; justify-self: center; }
+.look-media img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: center top; border-radius: var(--arch); background: var(--lilac); }
+.look-price { font-size: 1.3rem; font-weight: 800; margin: 0 0 18px; }
+.look-price .was { font-weight: 400; color: var(--ink-soft); margin-left: 6px; }
+.look-fact { margin: 0 0 8px; }
+.look-fact strong { display: inline-block; min-width: 64px; }
+.look-sub { font-size: 1.3rem; margin: 22px 0 6px; }
+.look-note { margin: 0 0 6px; max-width: 52ch; }
+.look-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 18px; }
+@media (min-width: 720px) {
+  .look-grid { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); gap: 48px; padding-top: 48px; }
+}
+
 /* ---------- Larger screens ---------- */
 @media (min-width: 720px) {
   :root { --gutter: 32px; --header-h: 76px; }
