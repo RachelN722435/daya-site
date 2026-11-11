@@ -1,220 +1,295 @@
-/* ==========================================================================
-   DAYA — everything you will ever want to edit lives in this one file.
+/* Daya — shared layout: affirmation bar, header, left menu, saved-looks bag, footer.
+   Runs on every page. Exposes window.DayaUI for the page scripts. */
+(function () {
+  var D = window.DAYA;
+  var CFG = D.config;
+  var BAG_KEY = "daya.bag";
 
-   1. config        → weekly affirmation + stylist contact details
-   2. bodyTypes     → the body type menu
-   3. occasions     → the occasion menu
-   4. looks         → the outfits shown across the site
-   5. articles      → the journal (short write-ups)
+  /* ---------- helpers ---------- */
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function money(amount, currency) {
+    if (currency === "USD") return "$" + amount.toLocaleString("en-US");
+    return "₦" + amount.toLocaleString("en-NG");
+  }
+  function byId(id) {
+    for (var i = 0; i < D.looks.length; i++) if (D.looks[i].id === id) return D.looks[i];
+    return null;
+  }
+  function occasionName(slug) {
+    for (var i = 0; i < D.occasions.length; i++) if (D.occasions[i].slug === slug) return D.occasions[i].name;
+    return slug;
+  }
+  function bodyName(slug) {
+    for (var i = 0; i < D.bodyTypes.length; i++) if (D.bodyTypes[i].slug === slug) return D.bodyTypes[i].name;
+    return slug;
+  }
+  function discount(look) {
+    return look.was ? Math.round(((look.was - look.price) / look.was) * 100) : 0;
+  }
 
-   Edit, save, redeploy. No other file needs to change.
-   ========================================================================== */
+  /* ---------- weekly affirmation ---------- */
+  function currentAffirmation() {
+    if (CFG.affirmationOverride && CFG.affirmationOverride.trim()) return CFG.affirmationOverride.trim();
+    var list = CFG.affirmations || [];
+    if (!list.length) return "";
+    var start = new Date(CFG.affirmationStart + "T00:00:00");
+    var weeks = Math.floor((Date.now() - start.getTime()) / (7 * 24 * 3600 * 1000));
+    if (isNaN(weeks) || weeks < 0) weeks = 0;
+    return list[weeks % list.length];
+  }
 
-window.DAYA = {
+  /* ---------- the bag (saved looks) ---------- */
+  function readBag() {
+    try {
+      var raw = localStorage.getItem(BAG_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr.filter(byId) : [];
+    } catch (e) { return memoryBag; }
+  }
+  var memoryBag = [];
+  function writeBag(arr) {
+    memoryBag = arr;
+    try { localStorage.setItem(BAG_KEY, JSON.stringify(arr)); } catch (e) { /* private mode: keep in memory */ }
+    document.dispatchEvent(new CustomEvent("daya:bag"));
+  }
+  function isSaved(id) { return readBag().indexOf(id) !== -1; }
+  function toggleSave(id) {
+    var bag = readBag();
+    var i = bag.indexOf(id);
+    if (i === -1) bag.push(id); else bag.splice(i, 1);
+    writeBag(bag);
+    return i === -1;
+  }
 
-  /* ---------- 1. CONFIG ---------- */
-  config: {
+  /* ---------- icons ---------- */
+  var ICON_BAG = '<svg class="icon icon-bag" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="bag-body" d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>';
+  var ICON_MENU = '<svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h16"/></svg>';
+  var ICON_CLOSE = '<svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 
-    /* WEEKLY AFFIRMATION BAR
-       Option A (automatic): add your sentences to the list below. The bar
-       moves to the next one every Monday, starting from `affirmationStart`.
-       Option B (manual): type a sentence into `affirmationOverride` and it
-       will show instead, until you clear it again. */
-    affirmationStart: "2026-11-09",      // a Monday
-    affirmationOverride: "",
-    affirmations: [
-      "You are allowed to take up space, in every room you walk into.",
-      "Your body is not a problem to solve. It is home, and it deserves to feel good.",
-      "You don't have to shrink to be chosen. Show up as you are.",
-      "Getting dressed is an act of kindness to yourself. Start there today.",
-      "Your confidence is not something you earn. It's something you wear.",
-      "You are already enough. The outfit is just the fun part.",
-      "Walk like you know where you're going. Because you do.",
-      "Soft is strong. Bold is beautiful. You get to be both.",
-      "Comfort and style were never opposites. You deserve both.",
-      "Be proud of how far you've come, and gentle about how far you have to go.",
-      "Your story is still being written. Dress like the main character.",
-      "You are worthy of good things, and that includes a great fit."
-    ],
+  /* ---------- card (used by the page scripts) ---------- */
+  function lookCard(look) {
+    var saved = isSaved(look.id);
+    var d = discount(look);
+    var link = look.url
+      ? '<a class="card-link" href="' + esc(look.url) + '" target="_blank" rel="noopener noreferrer">View at retailer</a>'
+      : '<a class="card-link" href="stylist.html?look=' + encodeURIComponent(look.id) + '">Ask a stylist about this</a>';
+    return (
+      '<article class="card" data-look="' + esc(look.id) + '">' +
+        '<div class="card-media">' +
+          '<a class="card-img-link" href="look.html?id=' + encodeURIComponent(look.id) + '" aria-label="View ' + esc(look.name) + '"><img src="' + esc(look.image) + '" alt="' + esc(look.name) + '" loading="lazy" width="600" height="800"></a>' +
+          (d ? '<span class="deal-badge">' + d + '% off</span>' : "") +
+          '<button type="button" class="save' + (saved ? " is-saved" : "") + '" data-save="' + esc(look.id) + '" aria-pressed="' + saved + '" aria-label="' + (saved ? "Remove " : "Save ") + esc(look.name) + (saved ? " from your bag" : " to your bag") + '">' + ICON_BAG + '</button>' +
+        '</div>' +
+        '<div class="card-body">' +
+          '<p class="card-meta">' + esc(occasionName(look.occasion)) + (look.brand ? " · " + esc(look.brand) : "") + '</p>' +
+          '<h3 class="card-title"><a href="look.html?id=' + encodeURIComponent(look.id) + '">' + esc(look.name) + '</a></h3>' +
+          '<p class="card-price"><span class="now">' + money(look.price, look.currency) + '</span>' +
+            (look.was ? ' <s class="was"><span class="sr-only">was </span>' + money(look.was, look.currency) + '</s>' : "") + '</p>' +
+        '</div>' +
+      '</article>'
+    );
+  }
 
-    /* STYLIST CONTACT — fill these in so "Book" and "Chat" work.
-       whatsapp: country code + number, digits only, e.g. "2348012345678"
-       email: where booking requests should be sent */
-    whatsapp: "2348089484402",
-    email: "nesse.management@gmail.com"
-  },
+  /* ---------- build the chrome ---------- */
+  var bodyLinks = D.bodyTypes.map(function (b) {
+    return '<li><a href="looks.html?body=' + b.slug + '">' + esc(b.name) + '</a></li>';
+  }).join("");
+  var occLinks = D.occasions.map(function (o) {
+    return '<li><a href="looks.html?occasion=' + o.slug + '">' + esc(o.name) + '</a></li>';
+  }).join("");
 
-  /* ---------- 2. BODY TYPES ---------- */
-  bodyTypes: [
-    { slug: "hourglass", name: "Hourglass", desc: "Bust and hips are close in size, with a clearly defined waist." },
-    { slug: "pear", name: "Pear", desc: "Hips are wider than the bust and shoulders." },
-    { slug: "apple", name: "Apple", desc: "You carry more fullness around the middle, with a waist similar to or wider than your bust and hips." },
-    { slug: "rectangle", name: "Rectangle", desc: "Bust, waist and hips are fairly similar in measurement." },
-    { slug: "inverted-triangle", name: "Inverted triangle", desc: "Shoulders and bust are broader than the hips." },
-    { slug: "athletic", name: "Athletic", desc: "A strong, toned frame with a straighter waistline." },
-    { slug: "petite", name: "Petite", desc: "160 cm (5'3\") or under. Proportion and hem length matter most." },
-    { slug: "tall", name: "Tall", desc: "175 cm (5'9\") or over. Length in sleeves, trousers and dresses matters most." },
-    { slug: "plus-size", name: "Plus size", desc: "UK 18 and above (US 14+). Shape, stretch and structure over size labels." },
-    { slug: "full-bust", name: "Full bust", desc: "A bust that is noticeably fuller than the rest of your frame, often a D cup or above." }
-  ],
+  var headerHTML =
+    '<a class="skip" href="#main">Skip to content</a>' +
+    '<div class="affirm" role="note" aria-label="This week’s affirmation"><p>' + esc(currentAffirmation()) + '</p></div>' +
+    '<header class="site-header">' +
+      '<button type="button" class="menu-btn" id="menu-open" aria-controls="menu-drawer" aria-expanded="false">' + ICON_MENU + '<span>Browse</span></button>' +
+      '<a class="logo" href="index.html" aria-label="Daya, home">Daya</a>' +
+      '<div class="header-right">' +
+        '<button type="button" class="bag-btn" id="bag-open" aria-controls="bag-drawer" aria-expanded="false" aria-label="Your saved looks">' + ICON_BAG + '<span class="bag-count" id="bag-count" hidden>0</span></button>' +
+      '</div>' +
+    '</header>' +
+    '<div class="styling-strip"><a href="stylist.html#book">One-on-one personal styling and guidance <span aria-hidden="true">→</span></a></div>' +
 
-  /* ---------- 3. OCCASIONS ---------- */
-  occasions: [
-    { slug: "workwear", name: "Workwear" },
-    { slug: "suits", name: "Suits" },
-    { slug: "modest", name: "Modest" },
-    { slug: "evening-gowns", name: "Evening gowns" },
-    { slug: "beachwear", name: "Beachwear" },
-    { slug: "weddings", name: "Weddings" },
-    { slug: "date-night", name: "Date night" },
-    { slug: "everyday", name: "Everyday" },
-    { slug: "events", name: "Events" },
-    { slug: "party", name: "Party" },
-    { slug: "church", name: "Church" },
-    { slug: "brunch", name: "Brunch" }
-  ],
+    '<div class="scrim" id="scrim" hidden></div>' +
 
-  /* ---------- 4. LOOKS ----------
-     price / was   → numbers, in the look's currency (was = the old price, for deals)
-     currency      → "NGN" or "USD"
-     bodies        → body type slugs this look suits
-     featured      → true = appears under "Best looks"
-     url           → link to the retailer (leave "" if none; the card will offer "Ask a stylist")
-     image         → the photo. Replace the sample photos with each look's own.
+    '<aside class="drawer drawer-left" id="menu-drawer" aria-label="Browse Daya" aria-hidden="true">' +
+      '<div class="drawer-head"><p class="drawer-title">Browse</p><button type="button" class="icon-btn" data-close aria-label="Close menu">' + ICON_CLOSE + '</button></div>' +
+      '<nav class="drawer-body" aria-label="Browse">' +
+        '<details class="acc"><summary>Body type</summary><ul class="acc-list">' + bodyLinks + '</ul></details>' +
+        '<details class="acc"><summary>Occasion</summary><ul class="acc-list">' + occLinks + '</ul></details>' +
+        '<a class="drawer-link" href="size-chart.html">Body size chart</a>' +
+        '<a class="drawer-link" href="calculator.html">Body calculator</a>' +
+        '<hr class="drawer-rule">' +
+        '<a class="drawer-link sub" href="looks.html?collection=best">Best looks</a>' +
+        '<a class="drawer-link sub" href="looks.html?collection=affordable">Most affordable</a>' +
+        '<a class="drawer-link sub" href="looks.html?collection=deals">Best deals</a>' +
+        '<a class="drawer-link sub" href="journal.html">Journal</a>' +
+      '</nav>' +
+    '</aside>' +
 
-     NOTE: these are the sample looks from your current site. The "was" prices
-     are placeholders so you can see how Best deals works. Replace with real ones. */
-  looks: [
-    {
-      id: "topshop-teal-maxi",
-      name: "Embellished fringed maxi dress in teal",
-      brand: "Asos Topshop",
-      occasion: "date-night",
-      bodies: ["hourglass", "pear", "tall"],
-      price: 490, currency: "USD",
-      featured: true,
-      url: "https://www.asos.com/topshop/topshop-premium-heavily-embellished-fringed-maxi-dress-in-teal-polka-dot/prd/210745025#colourWayId-210745031",
-      image: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794407060995-xmioyv.jpg"
-    },
-    {
-      id: "wide-leg-shirt",
-      name: "Wide-leg trousers and shirt",
-      brand: "",
-      occasion: "workwear",
-      bodies: ["pear", "rectangle", "tall", "petite"],
-      price: 55000, currency: "NGN",
-      featured: true,
-      url: "",
-      image: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794407102796-6oykzm.jpg"
-    },
-    {
-      id: "statement-dress",
-      name: "Statement dress",
-      brand: "",
-      occasion: "weddings",
-      bodies: ["hourglass", "plus-size", "full-bust", "apple"],
-      price: 85000, was: 110000, currency: "NGN",
-      featured: true,
-      url: "",
-      image: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406986889-3q7d7k.jpg"
-    },
-    {
-      id: "evening-look",
-      name: "Evening look",
-      brand: "",
-      occasion: "date-night",
-      bodies: ["hourglass", "rectangle", "athletic"],
-      price: 70000, was: 90000, currency: "NGN",
-      featured: true,
-      url: "",
-      image: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794407060995-xmioyv.jpg"
-    },
-    {
-      id: "relaxed-everyday-set",
-      name: "Relaxed everyday set",
-      brand: "",
-      occasion: "everyday",
-      bodies: ["apple", "rectangle", "plus-size", "petite"],
-      price: 35000, currency: "NGN",
-      featured: false,
-      url: "",
-      image: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794407170481-797s7t.jpg"
-    },
-    {
-      id: "layered-casual",
-      name: "Layered casual look",
-      brand: "",
-      occasion: "brunch",
-      bodies: ["inverted-triangle", "athletic", "tall"],
-      price: 45000, was: 52000, currency: "NGN",
-      featured: false,
-      url: "",
-      image: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406786730-jxa0b3.jpg"
-    },
-    {
-      id: "structured-event-dress",
-      name: "Structured event dress",
-      brand: "",
-      occasion: "events",
-      bodies: ["hourglass", "pear", "full-bust"],
-      price: 90000, was: 120000, currency: "NGN",
-      featured: false,
-      url: "",
-      image: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794407184155-3d1tya.jpg"
+    '<aside class="drawer drawer-right" id="bag-drawer" aria-label="Your saved looks" aria-hidden="true">' +
+      '<div class="drawer-head"><p class="drawer-title">Your bag</p><button type="button" class="icon-btn" data-close aria-label="Close your bag">' + ICON_CLOSE + '</button></div>' +
+      '<div class="drawer-body" id="bag-list"></div>' +
+      '<div class="drawer-foot" id="bag-foot" hidden><a class="btn btn-primary btn-block" id="bag-send" href="stylist.html">Send these to a stylist</a></div>' +
+    '</aside>';
+
+  var wa = CFG.whatsapp ? "https://wa.me/" + String(CFG.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent("Hi Daya, I'd like some help finding an outfit.") : "stylist.html#chat";
+  var waAttrs = CFG.whatsapp ? ' target="_blank" rel="noopener noreferrer"' : "";
+
+  var bandHTML =
+    '<section class="stylist-band" aria-labelledby="band-title">' +
+      '<div class="wrap band-inner">' +
+        '<div><h2 id="band-title">Didn’t find what you were looking for?</h2>' +
+        '<p>That’s okay. Tell us what you’re dressing for and a stylist will find options that fit you.</p></div>' +
+        '<div class="band-actions">' +
+          '<a class="btn btn-gold" href="' + wa + '"' + waAttrs + '>Chat with a stylist</a>' +
+        '</div>' +
+      '</div>' +
+    '</section>';
+
+  var showBand = document.body.getAttribute("data-page") === "looks";
+
+  var footerHTML =
+    (showBand ? bandHTML : "") +
+    '<footer class="site-footer"><div class="wrap foot-inner">' +
+      '<p class="foot-logo">Daya</p>' +
+      '<p class="foot-tag">Womenswear. Style for your real life.</p>' +
+      '<nav class="foot-nav" aria-label="Footer"><a href="looks.html">Looks</a><a href="journal.html">Journal</a><a href="size-chart.html">Size chart</a><a href="calculator.html">Body calculator</a><a href="stylist.html">Stylist</a></nav>' +
+    '</div></footer>';
+
+  document.body.insertAdjacentHTML("afterbegin", headerHTML);
+  document.body.insertAdjacentHTML("beforeend", footerHTML);
+
+  /* ---------- drawers ---------- */
+  var scrim = document.getElementById("scrim");
+  var drawers = {
+    menu: { el: document.getElementById("menu-drawer"), btn: document.getElementById("menu-open") },
+    bag: { el: document.getElementById("bag-drawer"), btn: document.getElementById("bag-open") }
+  };
+  var openKey = null;
+
+  function openDrawer(key) {
+    if (openKey) closeDrawer(true);
+    var d = drawers[key];
+    openKey = key;
+    d.el.classList.add("open");
+    d.el.setAttribute("aria-hidden", "false");
+    d.btn.setAttribute("aria-expanded", "true");
+    scrim.hidden = false;
+    requestAnimationFrame(function () { scrim.classList.add("show"); });
+    document.documentElement.classList.add("no-scroll");
+    var first = d.el.querySelector("[data-close]");
+    if (first) first.focus();
+  }
+  function closeDrawer(silent) {
+    if (!openKey) return;
+    var d = drawers[openKey];
+    d.el.classList.remove("open");
+    d.el.setAttribute("aria-hidden", "true");
+    d.btn.setAttribute("aria-expanded", "false");
+    if (!silent) d.btn.focus();
+    openKey = null;
+    scrim.classList.remove("show");
+    document.documentElement.classList.remove("no-scroll");
+    setTimeout(function () { if (!openKey) scrim.hidden = true; }, 250);
+  }
+
+  drawers.menu.btn.addEventListener("click", function () { openDrawer("menu"); });
+  drawers.bag.btn.addEventListener("click", function () { renderBag(); openDrawer("bag"); });
+  scrim.addEventListener("click", function () { closeDrawer(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeDrawer();
+    if (e.key === "Tab" && openKey) {                       /* keep focus inside the open drawer */
+      var f = drawers[openKey].el.querySelectorAll("a[href], button, summary");
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
-  ],
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-close]"), function (b) {
+    b.addEventListener("click", function () { closeDrawer(); });
+  });
+  /* following a link inside the menu closes it (matters for same-page links) */
+  drawers.menu.el.addEventListener("click", function (e) {
+    if (e.target.closest("a")) closeDrawer(true);
+  });
 
-  /* ---------- 5. ARTICLES ----------
-     To add one: copy a block, change the id (no spaces), and write.
-     Newest first. In `body`, each string is a paragraph; start a string
-     with "## " to make it a sub-heading. */
-  articles: [
-    {
-      id: "measure-without-the-panic",
-      title: "How to take your measurements without the panic",
-      date: "2026-11-09",
-      readMins: 3,
-      excerpt: "Three numbers, one tape measure, five minutes. Here is how to get them right, and what to do with them.",
-      image: "",
-      body: [
-        "A tape measure is a tool, not a verdict. The numbers you take are only there to help you find clothes that fit the body you have today.",
-        "## What you need",
-        "A soft tape measure, a mirror, and clothes thin enough that they won't add bulk. Stand relaxed, feet together, and breathe normally.",
-        "## The three measurements",
-        "Bust: around the fullest part of your chest, with the tape level across your back. Waist: around the narrowest part of your torso, usually just above the belly button. Hips: around the fullest part of your hips and bottom, feet together.",
-        "Write all three down, then use our body calculator to turn them into a size and a body type. Remember that sizes change from brand to brand, so always glance at the retailer's own chart too."
-      ]
-    },
-    {
-      id: "what-to-wear-to-a-wedding",
-      title: "Not sure what to wear to the wedding? Start here",
-      date: "2026-11-02",
-      readMins: 3,
-      excerpt: "A simple way to choose an outfit that photographs well, feels good at hour six, and doesn't compete with the bride.",
-      image: "",
-      body: [
-        "Wedding outfits fail for two reasons: they look great for ten minutes, or they look great but you can't sit in them. Plan for the whole day.",
-        "## Check the invitation first",
-        "Dress code, colour request and venue all narrow your choices fast. If the invitation says nothing, ask the couple, or look at the venue and the time of day.",
-        "## Choose fabric for the hours, not the hour",
-        "Look for fabrics that hold their shape and breathe. A structured dress or a well-cut two-piece will still look sharp after hours of sitting, dancing and hugging.",
-        "## Build around one statement",
-        "One strong piece, whether it's the colour, the sleeve or the gele, and keep everything else quiet. It looks deliberate, and it's easier to accessorise."
-      ]
-    },
-    {
-      id: "why-sizes-dont-match",
-      title: "Why your size changes from shop to shop",
-      date: "2026-10-26",
-      readMins: 2,
-      excerpt: "You're not changing. The labels are. A quick guide to shopping across brands without the guesswork.",
-      image: "",
-      body: [
-        "If you wear a 12 in one shop and a 14 in another, nothing is wrong with you. There is no single standard for women's sizing, and every brand cuts for its own idea of a customer.",
-        "## What to do instead",
-        "Use your measurements, not the number on the label. Compare them with the size chart on the product page, and read the fabric details: stretch changes everything.",
-        "When you're between sizes, size up for structured pieces and size down for stretchy ones. A good tailor can take clothes in far more easily than they can let them out."
-      ]
+  /* ---------- bag rendering ---------- */
+  function renderBag() {
+    var list = document.getElementById("bag-list");
+    var foot = document.getElementById("bag-foot");
+    var bag = readBag();
+    if (!bag.length) {
+      list.innerHTML =
+        '<div class="bag-empty"><p class="bag-empty-title">Your bag is empty</p>' +
+        '<p>Tap the bag icon on any look to save it here, then come back to compare or send them to a stylist.</p>' +
+        '<a class="btn btn-primary" href="looks.html">Browse looks</a></div>';
+      foot.hidden = true;
+      return;
     }
-  ]
-};
+    list.innerHTML = '<ul class="bag-items">' + bag.map(function (id) {
+      var l = byId(id);
+      var view = l.url
+        ? '<a href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer">View at retailer</a>'
+        : '<a href="stylist.html?look=' + encodeURIComponent(l.id) + '">Ask a stylist</a>';
+      return '<li class="bag-item">' +
+        '<img src="' + esc(l.image) + '" alt="" width="72" height="96">' +
+        '<div class="bag-item-text"><p class="bag-item-name">' + esc(l.name) + '</p>' +
+        '<p class="bag-item-price">' + money(l.price, l.currency) + '</p>' +
+        '<p class="bag-item-links">' + view + '<button type="button" class="linklike" data-remove="' + esc(l.id) + '">Remove</button></p></div>' +
+        '</li>';
+    }).join("") + '</ul>';
+    foot.hidden = false;
+    document.getElementById("bag-send").href = "stylist.html?looks=" + bag.map(encodeURIComponent).join(",") + "#book";
+  }
+
+  function refreshBadge() {
+    var n = readBag().length;
+    var c = document.getElementById("bag-count");
+    c.textContent = n;
+    c.hidden = n === 0;
+    drawers.bag.btn.setAttribute("aria-label", n ? "Your saved looks, " + n + " saved" : "Your saved looks");
+  }
+  function refreshSaveButtons() {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-save]"), function (b) {
+      var id = b.getAttribute("data-save");
+      var l = byId(id);
+      var s = isSaved(id);
+      b.classList.toggle("is-saved", s);
+      b.setAttribute("aria-pressed", String(s));
+      b.setAttribute("aria-label", (s ? "Remove " : "Save ") + (l ? l.name : "look") + (s ? " from your bag" : " to your bag"));
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    var save = e.target.closest("[data-save]");
+    if (save) {
+      var added = toggleSave(save.getAttribute("data-save"));
+      if (added) {
+        var btn = drawers.bag.btn;
+        btn.classList.remove("pop"); void btn.offsetWidth; btn.classList.add("pop");
+      }
+      return;
+    }
+    var rm = e.target.closest("[data-remove]");
+    if (rm) { toggleSave(rm.getAttribute("data-remove")); renderBag(); }
+  });
+  document.addEventListener("daya:bag", function () { refreshBadge(); refreshSaveButtons(); });
+  window.addEventListener("storage", function (e) { if (e.key === BAG_KEY) { refreshBadge(); refreshSaveButtons(); if (openKey === "bag") renderBag(); } });
+  refreshBadge();
+
+  /* ---------- public bits for the page scripts ---------- */
+  window.DayaUI = {
+    esc: esc, money: money, byId: byId, discount: discount,
+    occasionName: occasionName, bodyName: bodyName,
+    lookCard: lookCard, readBag: readBag,
+    whatsappLink: function (text) {
+      return CFG.whatsapp ? "https://wa.me/" + String(CFG.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(text) : "";
+    }
+  };
+})();
