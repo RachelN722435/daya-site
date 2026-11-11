@@ -3,17 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Look | Daya</title>
-  <meta name="description" content="Fabric, fit and how to style this look.">
+  <title>Looks | Daya</title>
+  <meta name="description" content="Browse outfits by body type and occasion.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Young+Serif&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="look">
+<body data-page="looks">
   <main id="main">
     <div class="wrap">
-      <div id="look"></div>
+      <div class="page-head">
+        <h1 class="page-title" id="looks-title">All looks</h1>
+        <p class="lede" id="looks-desc"></p>
+      </div>
+
+      <form class="filters" aria-label="Filter looks" onsubmit="return false">
+        <div class="field"><label for="f-collection">Collection</label>
+          <select id="f-collection">
+            <option value="">All looks</option>
+            <option value="best">Best looks</option>
+            <option value="affordable">Most affordable</option>
+            <option value="deals">Best deals</option>
+          </select>
+        </div>
+        <div class="field"><label for="f-body">Body type</label><select id="f-body"></select></div>
+        <div class="field"><label for="f-occasion">Occasion</label><select id="f-occasion"></select></div>
+        <div class="field-reset"><button type="button" class="linklike" id="f-reset">Clear filters</button></div>
+      </form>
+
+      <p class="result-count" id="looks-count" aria-live="polite"></p>
+      <div class="grid four" id="looks-grid"></div>
+
+      <div class="empty" id="looks-empty" hidden>
+        <h2>No looks here yet</h2>
+        <p>We haven’t added a look for that combination. Try clearing a filter, or chat with a stylist below.</p>
+      </div>
     </div>
   </main>
   <script src="content.js"></script>
