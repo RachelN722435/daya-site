@@ -19,6 +19,9 @@
       </div>
 
       <form class="filters" aria-label="Filter looks" onsubmit="return false">
+        <div class="field field-search"><label for="f-search">Search</label>
+          <input type="search" id="f-search" placeholder="Try “wedding”, “satin” or “hourglass”" autocomplete="off">
+        </div>
         <div class="field"><label for="f-collection">Collection</label>
           <select id="f-collection">
             <option value="">All looks</option>
@@ -29,6 +32,14 @@
         </div>
         <div class="field"><label for="f-body">Body type</label><select id="f-body"></select></div>
         <div class="field"><label for="f-occasion">Occasion</label><select id="f-occasion"></select></div>
+        <div class="field"><label for="f-sort">Sort by</label>
+          <select id="f-sort">
+            <option value="">Recommended</option>
+            <option value="low">Price: low to high</option>
+            <option value="high">Price: high to low</option>
+            <option value="discount">Biggest discount</option>
+          </select>
+        </div>
         <div class="field-reset"><button type="button" class="linklike" id="f-reset">Clear filters</button></div>
       </form>
 
@@ -37,7 +48,7 @@
 
       <div class="empty" id="looks-empty" hidden>
         <h2>No looks here yet</h2>
-        <p>We haven’t added a look for that combination. Try clearing a filter, or chat with a stylist below.</p>
+        <p>We haven’t added a look for that combination. Try a different search, clear the filters, or chat with a stylist below.</p>
       </div>
     </div>
   </main>
