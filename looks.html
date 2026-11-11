@@ -37,6 +37,26 @@
 
       <div class="empty" id="looks-empty" hidden>
         <h2>No looks here yet</h2>
+        <p>We haven’t added a look for that combination. Try clearing a filter, or chat with a stylist below.</p>
+      </div>
+    </div>
+  </main>
+  <script src="content.js"></script>
+  <script src="layout.js"></script>
+  <script src="pages.js"></script>
+</body>
+</html>
+        </div>
+        <div class="field"><label for="f-body">Body type</label><select id="f-body"></select></div>
+        <div class="field"><label for="f-occasion">Occasion</label><select id="f-occasion"></select></div>
+        <div class="field-reset"><button type="button" class="linklike" id="f-reset">Clear filters</button></div>
+      </form>
+
+      <p class="result-count" id="looks-count" aria-live="polite"></p>
+      <div class="grid four" id="looks-grid"></div>
+
+      <div class="empty" id="looks-empty" hidden>
+        <h2>No looks here yet</h2>
         <p>We haven’t added a look for that combination. Try clearing a filter, or let a stylist find something for you.</p>
         <a class="btn btn-primary" href="stylist.html#book">Book a stylist</a>
       </div>
