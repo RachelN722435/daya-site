@@ -40,8 +40,8 @@ window.DAYA = {
     /* STYLIST CONTACT — fill these in so "Book" and "Chat" work.
        whatsapp: country code + number, digits only, e.g. "2348012345678"
        email: where booking requests should be sent */
-    whatsapp: "",
-    email: ""
+    whatsapp: "2348089484402",
+    email: "nesse.management@gmail.com"
   },
 
   /* ---------- 2. BODY TYPES ---------- */

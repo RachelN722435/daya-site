@@ -1,26 +1,14 @@
 # Daya website
 
-Plain HTML, CSS and JavaScript. No build step.
+Plain HTML, CSS and JavaScript. No build step. All files sit at the top level.
 
-## Everything you edit is in `js/content.js`
+## Everything you edit is in `content.js`
 
 | To do this | Edit this |
 |---|---|
-| Change the weekly affirmation | `affirmations` list (it moves to the next one every Monday) or type one into `affirmationOverride` |
-| Turn on Book / Chat with a stylist | `whatsapp` (digits only, e.g. `2348012345678`) and/or `email` |
+| Change the weekly affirmation | the `affirmations` list (moves to the next one every Monday) or type one into `affirmationOverride` |
+| Contact details for Book / Chat | `whatsapp` and `email` |
 | Add, change or remove a look | the `looks` list |
-| Add a journal article | copy a block in `articles`, change the `id` and write |
+| Add a journal article | copy a block in `articles`, change the `id`, and write |
 
-How the home page sections work:
-- **Best looks**: looks with `featured: true`
-- **Most affordable**: Naira looks, cheapest first
-- **Best deals**: looks that have a `was` price, biggest discount first
-
-## Deploying on Vercel
-
-Upload the whole folder (or push it to the repo Vercel is connected to). `vercel.json` makes
-`/calculator`, `/looks` etc. work without `.html`.
-
-## Pages
-
-`index.html` home · `looks.html` filtered looks · `journal.html` + `article.html` · `size-chart.html` · `calculator.html` · `stylist.html`
+Home page sections: Best looks = `featured: true`; Most affordable = Naira looks, cheapest first; Best deals = looks with a `was` price, biggest discount first.
