@@ -48,6 +48,14 @@
     /* ---------------- LOOKS (filters) ---------------- */
     looks: function () {
       var selBody = $("#f-body"), selOcc = $("#f-occasion"), selCol = $("#f-collection");
+      var inSearch = $("#f-search"), selSort = $("#f-sort");
+      inSearch.value = params.get("q") || "";
+      selSort.value = params.get("sort") || "";
+      if (selSort.value !== (params.get("sort") || "")) selSort.value = "";
+      function ngn(l) { return l.currency === "USD" ? l.price * (D.config.usdToNgn || 1500) : l.price; }
+      function haystack(l) {
+        return [l.name, l.brand, U.occasionName(l.occasion), (l.bodies || []).map(U.bodyName).join(" "), l.fabric, l.styling].join(" ").toLowerCase();
+      }
       selBody.innerHTML = '<option value="">All body types</option>' + D.bodyTypes.map(function (b) {
         return '<option value="' + b.slug + '">' + esc(b.name) + '</option>';
       }).join("");
@@ -72,6 +80,19 @@
         if (body) list = list.filter(function (l) { return l.bodies.indexOf(body) !== -1; });
         if (occ) list = list.filter(function (l) { return l.occasion === occ; });
 
+        var term = inSearch.value.trim().toLowerCase();
+        if (term) {
+          var words = term.split(/\s+/);
+          list = list.filter(function (l) {
+            var h = haystack(l);
+            return words.every(function (w) { return h.indexOf(w) !== -1; });
+          });
+        }
+        var sort = selSort.value;
+        if (sort === "low") list.sort(function (a, b) { return ngn(a) - ngn(b); });
+        if (sort === "high") list.sort(function (a, b) { return ngn(b) - ngn(a); });
+        if (sort === "discount") list.sort(function (a, b) { return U.discount(b) - U.discount(a); });
+
         var title = TITLES[col] || "All looks";
         var bits = [];
         if (body) bits.push(U.bodyName(body));
@@ -82,7 +103,7 @@
         for (var i = 0; i < D.bodyTypes.length; i++) if (D.bodyTypes[i].slug === body) desc = D.bodyTypes[i].desc;
         $("#looks-desc").textContent = desc || "Outfits chosen for different bodies and moments. Save the ones you love to your bag.";
 
-        $("#looks-count").textContent = list.length + (list.length === 1 ? " look" : " looks");
+        $("#looks-count").textContent = list.length + (list.length === 1 ? " look" : " looks") + (term ? " for “" + inSearch.value.trim() + "”" : "");
         var grid = $("#looks-grid");
         if (list.length) {
           grid.innerHTML = list.map(U.lookCard).join("");
@@ -96,11 +117,14 @@
         if (body) q.set("body", body);
         if (occ) q.set("occasion", occ);
         if (col) q.set("collection", col);
+        if (term) q.set("q", inSearch.value.trim());
+        if (sort) q.set("sort", sort);
         var qs = q.toString();
         try { history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "")); } catch (e) { /* ignore */ }
       }
-      [selBody, selOcc, selCol].forEach(function (s) { s.addEventListener("change", render); });
-      $("#f-reset").addEventListener("click", function () { selBody.value = ""; selOcc.value = ""; selCol.value = ""; render(); });
+      [selBody, selOcc, selCol, selSort].forEach(function (s) { s.addEventListener("change", render); });
+      inSearch.addEventListener("input", render);
+      $("#f-reset").addEventListener("click", function () { selBody.value = ""; selOcc.value = ""; selCol.value = ""; selSort.value = ""; inSearch.value = ""; render(); });
       render();
     },
 
@@ -122,7 +146,7 @@
       box.innerHTML =
         '<div class="look-grid">' +
           '<div class="look-media">' +
-            (l.image ? '<img src="' + esc(l.image) + '" alt="' + esc(l.name) + '">' : "") +
+            (l.image ? '<img src="' + esc(U.img(l.image, 800)) + '" alt="' + esc(l.name) + '" decoding="async">' : "") +
             (d ? '<span class="deal-badge">' + d + '% off</span>' : "") +
           '</div>' +
           '<div class="look-info">' +
@@ -134,7 +158,9 @@
             (suits ? '<p class="look-fact"><strong>Suits</strong> ' + esc(suits) + '</p>' : "") +
             (l.styling ? '<h2 class="look-sub">How to style it</h2><p class="look-note">' + esc(l.styling) + '</p>' : "") +
             '<div class="look-actions">' + retailer +
-              '<button type="button" class="btn btn-ghost" id="look-save" data-save="' + esc(l.id) + '"></button></div>' +
+              '<button type="button" class="btn btn-ghost" id="look-save" data-save="' + esc(l.id) + '"></button>' +
+              '<button type="button" class="btn btn-ghost" id="look-share">Share this look</button></div>' +
+            '<p class="look-copy"><button type="button" class="linklike" id="look-copy">Copy link</button></p>' +
             '<p class="back"><a href="looks.html">← All looks</a></p>' +
           '</div>' +
         '</div>';
@@ -142,6 +168,25 @@
       function label() { saveBtn.textContent = U.readBag().indexOf(l.id) !== -1 ? "Saved to your bag" : "Save to bag"; }
       label();
       document.addEventListener("daya:bag", label);
+
+      var shareUrl = location.href;
+      var shareText = l.name + " on Daya";
+      $("#look-share").addEventListener("click", function () {
+        if (navigator.share) {
+          navigator.share({ title: shareText, text: shareText, url: shareUrl }).catch(function () { /* cancelled */ });
+        } else {
+          window.open("https://wa.me/?text=" + encodeURIComponent(shareText + " " + shareUrl), "_blank", "noopener");
+        }
+      });
+      var copyBtn = $("#look-copy");
+      copyBtn.addEventListener("click", function () {
+        function done() { copyBtn.textContent = "Link copied"; setTimeout(function () { copyBtn.textContent = "Copy link"; }, 2000); }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareUrl).then(done, function () { window.prompt("Copy this link:", shareUrl); });
+        } else {
+          window.prompt("Copy this link:", shareUrl);
+        }
+      });
     },
 
     /* ---------------- JOURNAL ---------------- */
