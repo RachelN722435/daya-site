@@ -31,6 +31,24 @@
     return look.was ? Math.round(((look.was - look.price) / look.was) * 100) : 0;
   }
 
+  /* ---------- images: optional resizing + faster connection ---------- */
+  function img(url, w) {
+    if (!CFG.imageResize || !url) return url;
+    var m = String(url).match(/^(https:\/\/[^/]+)\/storage\/v1\/object\/public\/(.+)$/);
+    if (!m) return url;
+    return m[1] + "/storage/v1/render/image/public/" + m[2] + "?width=" + w + "&quality=75";
+  }
+  (function () {
+    var first = null;
+    for (var i = 0; i < D.looks.length; i++) if (D.looks[i].image) { first = D.looks[i].image; break; }
+    var m = first && String(first).match(/^https:\/\/[^/]+/);
+    if (m) {
+      var l = document.createElement("link");
+      l.rel = "preconnect"; l.href = m[0]; l.crossOrigin = "anonymous";
+      document.head.appendChild(l);
+    }
+  })();
+
   /* ---------- weekly affirmation ---------- */
   function currentAffirmation() {
     if (CFG.affirmationOverride && CFG.affirmationOverride.trim()) return CFG.affirmationOverride.trim();
@@ -80,7 +98,7 @@
     return (
       '<article class="card" data-look="' + esc(look.id) + '">' +
         '<div class="card-media">' +
-          '<a class="card-img-link" href="look.html?id=' + encodeURIComponent(look.id) + '" aria-label="View ' + esc(look.name) + '"><img src="' + esc(look.image) + '" alt="' + esc(look.name) + '" loading="lazy" width="600" height="800"></a>' +
+          '<a class="card-img-link" href="look.html?id=' + encodeURIComponent(look.id) + '" aria-label="View ' + esc(look.name) + '"><img src="' + esc(img(look.image, 500)) + '" alt="' + esc(look.name) + '" loading="lazy" decoding="async" width="600" height="800"></a>' +
           (d ? '<span class="deal-badge">' + d + '% off</span>' : "") +
           '<button type="button" class="save' + (saved ? " is-saved" : "") + '" data-save="' + esc(look.id) + '" aria-pressed="' + saved + '" aria-label="' + (saved ? "Remove " : "Save ") + esc(look.name) + (saved ? " from your bag" : " to your bag") + '">' + ICON_BAG + '</button>' +
         '</div>' +
@@ -238,7 +256,7 @@
         ? '<a href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer">View at retailer</a>'
         : '<a href="stylist.html?look=' + encodeURIComponent(l.id) + '">Ask a stylist</a>';
       return '<li class="bag-item">' +
-        '<img src="' + esc(l.image) + '" alt="" width="72" height="96">' +
+        '<img src="' + esc(img(l.image, 150)) + '" alt="" width="72" height="96" decoding="async">' +
         '<div class="bag-item-text"><p class="bag-item-name">' + esc(l.name) + '</p>' +
         '<p class="bag-item-price">' + money(l.price, l.currency) + '</p>' +
         '<p class="bag-item-links">' + view + '<button type="button" class="linklike" data-remove="' + esc(l.id) + '">Remove</button></p></div>' +
@@ -286,7 +304,7 @@
   /* ---------- public bits for the page scripts ---------- */
   window.DayaUI = {
     esc: esc, money: money, byId: byId, discount: discount,
-    occasionName: occasionName, bodyName: bodyName,
+    occasionName: occasionName, bodyName: bodyName, img: img,
     lookCard: lookCard, readBag: readBag,
     whatsappLink: function (text) {
       return CFG.whatsapp ? "https://wa.me/" + String(CFG.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(text) : "";
