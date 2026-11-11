@@ -104,6 +104,46 @@
       render();
     },
 
+    /* ---------------- LOOK (single outfit) ---------------- */
+    look: function () {
+      var id = params.get("id");
+      var l = U.byId(id);
+      var box = $("#look");
+      if (!l) {
+        box.innerHTML = '<h1 class="page-title">We couldn’t find that look</h1><p class="lede">It may have moved. <a href="looks.html">Browse all looks</a>.</p>';
+        return;
+      }
+      document.title = l.name + " | Daya";
+      var d = U.discount(l);
+      var suits = (l.bodies || []).map(U.bodyName).join(", ");
+      var retailer = l.url
+        ? '<a class="btn btn-primary" href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer">View at retailer</a>'
+        : '<a class="btn btn-primary" href="stylist.html?look=' + encodeURIComponent(l.id) + '">Ask a stylist about this</a>';
+      box.innerHTML =
+        '<div class="look-grid">' +
+          '<div class="look-media">' +
+            (l.image ? '<img src="' + esc(l.image) + '" alt="' + esc(l.name) + '">' : "") +
+            (d ? '<span class="deal-badge">' + d + '% off</span>' : "") +
+          '</div>' +
+          '<div class="look-info">' +
+            '<p class="card-meta">' + esc(U.occasionName(l.occasion)) + (l.brand ? " · " + esc(l.brand) : "") + '</p>' +
+            '<h1 class="page-title">' + esc(l.name) + '</h1>' +
+            '<p class="look-price"><span class="now">' + U.money(l.price, l.currency) + '</span>' +
+              (l.was ? ' <s class="was">' + U.money(l.was, l.currency) + '</s>' : "") + '</p>' +
+            (l.fabric ? '<p class="look-fact"><strong>Fabric</strong> ' + esc(l.fabric) + '</p>' : "") +
+            (suits ? '<p class="look-fact"><strong>Suits</strong> ' + esc(suits) + '</p>' : "") +
+            (l.styling ? '<h2 class="look-sub">How to style it</h2><p class="look-note">' + esc(l.styling) + '</p>' : "") +
+            '<div class="look-actions">' + retailer +
+              '<button type="button" class="btn btn-ghost" id="look-save" data-save="' + esc(l.id) + '"></button></div>' +
+            '<p class="back"><a href="looks.html">← All looks</a></p>' +
+          '</div>' +
+        '</div>';
+      var saveBtn = $("#look-save");
+      function label() { saveBtn.textContent = U.readBag().indexOf(l.id) !== -1 ? "Saved to your bag" : "Save to bag"; }
+      label();
+      document.addEventListener("daya:bag", label);
+    },
+
     /* ---------------- JOURNAL ---------------- */
     journal: function () {
       $("#journal-list").innerHTML = D.articles.map(articleCard).join("");
