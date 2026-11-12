@@ -126,7 +126,6 @@
 
   var headerHTML =
     '<a class="skip" href="#main">Skip to content</a>' +
-    '<div class="affirm" role="note" aria-label="This week’s affirmation"><p>' + esc(currentAffirmation()) + '</p></div>' +
     '<header class="site-header">' +
       '<button type="button" class="menu-btn" id="menu-open" aria-controls="menu-drawer" aria-expanded="false">' + ICON_MENU + '<span>Browse</span></button>' +
       '<a class="logo" href="index.html" aria-label="Daya, home">Daya</a>' +
@@ -159,6 +158,19 @@
       '<div class="drawer-foot" id="bag-foot" hidden><a class="btn btn-primary btn-block" id="bag-send" href="stylist.html">Send these to a stylist</a></div>' +
     '</aside>';
 
+  var affText = currentAffirmation();
+  var affirmHTML = affText
+    ? '<aside class="affirm-side" aria-label="This week’s affirmation">' +
+        '<button type="button" class="affirm-tab" id="affirm-tab" aria-expanded="false" aria-controls="affirm-card">' +
+          '<span class="affirm-star" aria-hidden="true">✦</span><span class="affirm-tab-label">This week</span></button>' +
+        '<div class="affirm-card" id="affirm-card" role="note" hidden>' +
+          '<button type="button" class="affirm-x" id="affirm-x" aria-label="Close affirmation">' + ICON_CLOSE + '</button>' +
+          '<p class="affirm-kicker">This week’s affirmation</p>' +
+          '<p class="affirm-quote">' + esc(affText) + '</p>' +
+        '</div>' +
+      '</aside>'
+    : "";
+
   var wa = CFG.whatsapp ? "https://wa.me/" + String(CFG.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent("Hi Daya, I'd like some help finding an outfit.") : "stylist.html#chat";
   var waAttrs = CFG.whatsapp ? ' target="_blank" rel="noopener noreferrer"' : "";
 
@@ -183,8 +195,27 @@
       '<nav class="foot-nav" aria-label="Footer"><a href="looks.html">Looks</a><a href="journal.html">Journal</a><a href="size-chart.html">Size chart</a><a href="calculator.html">Body calculator</a><a href="stylist.html">Stylist</a></nav>' +
     '</div></footer>';
 
-  document.body.insertAdjacentHTML("afterbegin", headerHTML);
+  document.body.insertAdjacentHTML("afterbegin", headerHTML + affirmHTML);
   document.body.insertAdjacentHTML("beforeend", footerHTML);
+
+  /* ---------- weekly affirmation: side tab + homepage line ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-affirm]"), function (n) { n.textContent = affText; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-affirm-wrap]"), function (n) { n.hidden = !affText; });
+  (function () {
+    var tab = document.getElementById("affirm-tab");
+    var card = document.getElementById("affirm-card");
+    if (!tab || !card) return;
+    function setOpen(open) {
+      card.hidden = !open;
+      tab.setAttribute("aria-expanded", String(open));
+    }
+    tab.addEventListener("click", function () { setOpen(card.hidden); });
+    document.getElementById("affirm-x").addEventListener("click", function () { setOpen(false); tab.focus(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !card.hidden) { setOpen(false); tab.focus(); } });
+    document.addEventListener("click", function (e) {
+      if (!card.hidden && !e.target.closest(".affirm-side")) setOpen(false);
+    });
+  })();
 
   /* ---------- drawers ---------- */
   var scrim = document.getElementById("scrim");

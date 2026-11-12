@@ -67,7 +67,7 @@ body.admin { background: var(--paper); padding-bottom: 96px; }
 .a-err { margin: 0; color: var(--berry-deep); font-weight: 600; font-size: .92rem; }
 
 /* library dialog */
-.a-modal { position: fixed; inset: 0; z-index: 80; background: rgba(42, 26, 29, .55); display: grid; place-items: center; padding: 16px; }
+.a-modal { position: fixed; inset: 0; z-index: 80; background: rgba(31, 31, 31, .55); display: grid; place-items: center; padding: 16px; }
 .a-dialog { background: var(--paper); border-radius: 22px; width: min(760px, 100%); max-height: 86vh; display: flex; flex-direction: column; }
 .a-dialog header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--line); }
 .a-dialog h2 { font-size: 1.3rem; margin: 0; }

@@ -263,8 +263,10 @@
       ["why2Title", "Point 2 title"], ["why2Text", "Point 2 text", 2],
       ["why3Title", "Point 3 title"], ["why3Text", "Point 3 text", 2] ] },
     { title: "Homepage sections", fields: [
+      ["occasionsTitle", "Occasions: heading"], ["occasionsSub", "Occasions: line under it", 2],
       ["bestTitle", "Best looks: heading"], ["bestSub", "Best looks: line under it", 2],
       ["affordableTitle", "Most affordable: heading"], ["affordableSub", "Most affordable: line under it", 2],
+      ["toolsTitle", "Calculator and size chart: heading"], ["toolsSub", "Calculator and size chart: line under it", 2],
       ["dealsTitle", "Best deals: heading"], ["dealsSub", "Best deals: line under it", 2],
       ["journalTitle", "Journal: heading"], ["journalSub", "Journal: line under it", 2] ] },
     { title: "Stylist offers (shown on every page)", fields: [
@@ -437,7 +439,7 @@
     const paintPreview = () => { preview.querySelector("b").textContent = currentAffirmation(cfg) || "(nothing yet)"; };
     paintPreview();
     panel.append(
-      card("Weekly affirmation", "The bar at the very top of every page. It moves to the next sentence every Monday, or you can type one sentence to show instead.",
+      card("Weekly affirmation", "Shown as a small “This week” tab on every page and as a line on the homepage, in cursive. It moves to the next sentence every Monday, or you can type one sentence to show instead.",
         preview,
         field("Show this sentence instead (optional)", () => cfg.affirmationOverride, (v) => { cfg.affirmationOverride = v; }, { onInput: paintPreview, hint: "Leave empty to let the weekly list run." }),
         field("Weekly list (one sentence per line)", () => (cfg.affirmations || []).join("\n"), (v) => { cfg.affirmations = v.split("\n").map((s) => s.trim()).filter(Boolean); }, { rows: 10, onInput: paintPreview, hint: "The first line is used in the week that begins on the date below." }),

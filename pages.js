@@ -38,6 +38,18 @@
 
     /* ---------------- HOME ---------------- */
     home: function () {
+      var tiles = $("#occ-tiles");
+      if (tiles) {
+        var counts = {};
+        D.looks.forEach(function (l) { counts[l.occasion] = (counts[l.occasion] || 0) + 1; });
+        var shown = D.occasions.filter(function (o) { return counts[o.slug]; });
+        if (!shown.length) shown = D.occasions;
+        tiles.innerHTML = shown.map(function (o) {
+          var n = counts[o.slug] || 0;
+          return '<a class="occ-tile" href="looks.html?occasion=' + encodeURIComponent(o.slug) + '"><span class="occ-name">' + esc(o.name) + '</span>' +
+            '<span class="occ-count">' + (n ? n + (n === 1 ? " look" : " looks") : "Coming soon") + '</span></a>';
+        }).join("");
+      }
       fillGrid("#grid-best", best(), 4);
       fillGrid("#grid-affordable", affordable(), 4);
       fillGrid("#grid-deals", deals(), 4);
@@ -45,41 +57,37 @@
       if (j) j.innerHTML = D.articles.slice(0, 3).map(articleCard).join("");
     },
 
-    /* ---------------- LOOKS (pick occasion, then body type) ---------------- */
+    /* ---------------- LOOKS (sticky filter bar) ---------------- */
     looks: function () {
       function valid(list, slug) {
         for (var i = 0; i < list.length; i++) if (list[i].slug === slug) return slug;
         return "";
       }
+      var SORTS = { low: 1, high: 1, deal: 1 };
       var state = {
         occ: valid(D.occasions, params.get("occasion") || ""),
         body: valid(D.bodyTypes, params.get("body") || ""),
-        col: params.get("collection") || ""
+        col: params.get("collection") || "",
+        sort: SORTS[params.get("sort")] ? params.get("sort") : ""
       };
       var TITLES = { best: "Best looks", affordable: "Most affordable", deals: "Best deals" };
       if (!TITLES[state.col]) state.col = "";
+      var rate = Number(D.config && D.config.usdToNgn) || 1;
+      function ngn(l) { return l.currency === "USD" ? l.price * rate : l.price; }
 
-      var occWrap = $("#occ-chips"), bodyWrap = $("#body-chips");
-
-      function chips(list, current) {
-        return list.map(function (x) {
-          return '<button type="button" class="chip" data-slug="' + x.slug + '" aria-pressed="' + (x.slug === current) + '">' + esc(x.name) + '</button>';
+      var selOcc = $("#f-occ"), selBody = $("#f-body"), selSort = $("#f-sort");
+      function options(list, all) {
+        return '<option value="">' + all + '</option>' + list.map(function (x) {
+          return '<option value="' + esc(x.slug) + '">' + esc(x.name) + '</option>';
         }).join("");
       }
+      selOcc.innerHTML = options(D.occasions, "All occasions");
+      selBody.innerHTML = options(D.bodyTypes, "All body types");
 
       function render() {
-        occWrap.innerHTML = chips(D.occasions, state.occ);
-        bodyWrap.innerHTML = chips(D.bodyTypes, state.body);
-        $("#step-body").hidden = !(state.occ || state.body || state.col);
-
-        var ready = (state.occ && state.body) || state.col;
-        var prompt = "";
-        if (!ready) {
-          if (!state.occ && !state.body) prompt = "Start by choosing the occasion you’re dressing for.";
-          else if (state.occ) prompt = "Now choose your body type to see your looks.";
-          else prompt = "Now choose the occasion to see your looks.";
-        }
-        $("#looks-prompt").textContent = prompt;
+        selOcc.value = state.occ;
+        selBody.value = state.body;
+        selSort.value = state.sort;
 
         var title = TITLES[state.col] || "All looks";
         var bits = [];
@@ -91,48 +99,35 @@
         for (var i = 0; i < D.bodyTypes.length; i++) if (D.bodyTypes[i].slug === state.body) desc = D.bodyTypes[i].desc;
         $("#looks-desc").textContent = desc || "Outfits chosen for different bodies and moments. Save the ones you love to your bag.";
 
-        var grid = $("#looks-grid"), count = $("#looks-count"), empty = $("#looks-empty");
-        if (!ready) {
-          grid.innerHTML = "";
-          count.textContent = "";
-          empty.hidden = true;
-        } else {
-          var list = D.looks.slice();
-          if (state.col === "best") list = best();
-          if (state.col === "affordable") list = affordable();
-          if (state.col === "deals") list = deals();
-          if (state.body) list = list.filter(function (l) { return l.bodies.indexOf(state.body) !== -1; });
-          if (state.occ) list = list.filter(function (l) { return l.occasion === state.occ; });
-          count.textContent = list.length + (list.length === 1 ? " look" : " looks");
-          if (list.length) {
-            grid.innerHTML = list.map(U.lookCard).join("");
-            empty.hidden = true;
-          } else {
-            grid.innerHTML = "";
-            empty.hidden = false;
-          }
-        }
+        var list = D.looks.slice();
+        if (state.col === "best") list = best();
+        if (state.col === "affordable") list = affordable();
+        if (state.col === "deals") list = deals();
+        if (state.body) list = list.filter(function (l) { return l.bodies.indexOf(state.body) !== -1; });
+        if (state.occ) list = list.filter(function (l) { return l.occasion === state.occ; });
+        if (state.sort === "low") list.sort(function (a, b) { return ngn(a) - ngn(b); });
+        if (state.sort === "high") list.sort(function (a, b) { return ngn(b) - ngn(a); });
+        if (state.sort === "deal") list.sort(function (a, b) { return (b.was ? U.discount(b) : 0) - (a.was ? U.discount(a) : 0); });
+
+        var grid = $("#looks-grid"), empty = $("#looks-empty");
+        $("#looks-count").textContent = list.length + (list.length === 1 ? " look" : " looks");
+        $("#looks-prompt").textContent = "";
+        grid.innerHTML = list.map(U.lookCard).join("");
+        empty.hidden = list.length > 0;
 
         var q = new URLSearchParams();
         if (state.occ) q.set("occasion", state.occ);
         if (state.body) q.set("body", state.body);
         if (state.col) q.set("collection", state.col);
+        if (state.sort) q.set("sort", state.sort);
         var qs = q.toString();
         try { history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "")); } catch (e) { /* ignore */ }
       }
 
-      function pick(key) {
-        return function (e) {
-          var b = e.target.closest(".chip");
-          if (!b) return;
-          var slug = b.getAttribute("data-slug");
-          state[key] = state[key] === slug ? "" : slug;
-          render();
-        };
-      }
-      occWrap.addEventListener("click", pick("occ"));
-      bodyWrap.addEventListener("click", pick("body"));
-      $("#f-reset").addEventListener("click", function () { state.occ = ""; state.body = ""; state.col = ""; render(); });
+      selOcc.addEventListener("change", function () { state.occ = selOcc.value; render(); });
+      selBody.addEventListener("change", function () { state.body = selBody.value; render(); });
+      selSort.addEventListener("change", function () { state.sort = selSort.value; render(); });
+      $("#f-reset").addEventListener("click", function () { state.occ = ""; state.body = ""; state.col = ""; state.sort = ""; render(); });
       render();
     },
 

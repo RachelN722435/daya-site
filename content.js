@@ -55,10 +55,13 @@ window.DAYA = {
   /* ---------- PAGE TEXT (editable in the admin under "Page text") ---------- */
   text: {
     heroTitle: "Every body is Daya body.",
-    heroText: "Clothing chosen for your body, comfort and lifestyle. Find outfits for every occasion and shop with more confidence.",
-    heroBtn1: "Find your look",
+    heroText: "Outfits chosen to fit and flatter, so you can shop with confidence and love what you buy.",
+    heroBtn1: "Shop by occasion",
     heroBtn2: "Find your size",
     heroImage: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406655212-083v5l.jpg",
+
+    occasionsTitle: "What are you dressing for?",
+    occasionsSub: "Choose the moment and we’ll show you looks that suit it.",
 
     whyTitle: "Why Daya",
     whySub: "Finding clothes that fit should never feel like guesswork.",
@@ -70,11 +73,14 @@ window.DAYA = {
     why3Text: "Every look comes with notes on fabric and styling, and links you to where you can buy it.",
 
     bestTitle: "Best looks",
-    bestSub: "Our favourites right now, chosen for fit, comfort and how good they make you feel.",
+    bestSub: "Our favourites right now. Each one is checked for fabric, fit and sizing before it’s listed.",
     affordableTitle: "Most affordable",
     affordableSub: "Great outfits that are kind to your budget, starting with the lowest price.",
     dealsTitle: "Best deals",
     dealsSub: "Looks with the biggest savings, from the largest discount down.",
+    toolsTitle: "Find your fit",
+    toolsSub: "Two quick tools and a real person, so you know it will fit before you buy.",
+
     journalTitle: "From the journal",
     journalSub: "Short reads on fit, style and feeling good in what you wear.",
 

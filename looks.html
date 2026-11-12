@@ -7,7 +7,7 @@
   <meta name="description" content="Browse outfits by body type and occasion.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Young+Serif&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-page="looks">
@@ -17,20 +17,25 @@
         <h1 class="page-title" id="looks-title">All looks</h1>
         <p class="lede" id="looks-desc"></p>
       </div>
-
-      <div class="steps">
-        <div class="step" id="step-occ">
-          <h2 class="step-title"><span class="step-num">1</span> What are you dressing for?</h2>
-          <div class="chips" id="occ-chips" role="group" aria-label="Occasion"></div>
+    </div>
+    <div class="filter-bar" role="search" aria-label="Filter looks">
+      <div class="wrap filter-inner">
+        <div class="fb-field"><label for="f-occ">Occasion</label><select id="f-occ"></select></div>
+        <div class="fb-field"><label for="f-body">Body type</label><select id="f-body"></select></div>
+        <div class="fb-field"><label for="f-sort">Sort by</label>
+          <select id="f-sort">
+            <option value="">Our picks</option>
+            <option value="low">Lowest price</option>
+            <option value="high">Highest price</option>
+            <option value="deal">Biggest saving</option>
+          </select>
         </div>
-        <div class="step" id="step-body" hidden>
-          <h2 class="step-title"><span class="step-num">2</span> Your body type</h2>
-          <div class="chips" id="body-chips" role="group" aria-label="Body type"></div>
-          <p class="step-note"><a href="calculator.html">Not sure of your body type? Use the body calculator</a></p>
-        </div>
-        <p class="step-prompt" id="looks-prompt" aria-live="polite"></p>
-        <div><button type="button" class="linklike" id="f-reset">Start again</button></div>
+        <button type="button" class="linklike fb-reset" id="f-reset">Clear all</button>
       </div>
+    </div>
+    <div class="wrap">
+      <p class="step-note"><a href="calculator.html">Not sure of your body type? Use the body calculator</a></p>
+      <p class="step-prompt" id="looks-prompt" aria-live="polite"></p>
 
       <p class="result-count" id="looks-count" aria-live="polite"></p>
       <div class="grid four" id="looks-grid"></div>
