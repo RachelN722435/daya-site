@@ -16,15 +16,15 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div>
-          <h1>Every body is Daya body.</h1>
-          <p class="lede">Clothing chosen for your body, comfort and lifestyle. Find outfits for every occasion and shop with more confidence.</p>
+          <h1 data-text="heroTitle">Every body is Daya body.</h1>
+          <p class="lede" data-text="heroText">Clothing chosen for your body, comfort and lifestyle. Find outfits for every occasion and shop with more confidence.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="looks.html">Find your look</a>
-            <a class="btn btn-ghost" href="calculator.html">Find your size</a>
+            <a class="btn btn-primary" href="looks.html" data-text="heroBtn1">Find your look</a>
+            <a class="btn btn-ghost" href="calculator.html" data-text="heroBtn2">Find your size</a>
           </div>
         </div>
         <div class="hero-art">
-          <img src="https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406655212-083v5l.jpg" alt="A woman in an elegant outfit" width="600" height="800" fetchpriority="high" decoding="async">
+          <img data-img="heroImage" src="https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406655212-083v5l.jpg" alt="A woman in an elegant outfit" width="600" height="800" fetchpriority="high" decoding="async">
         </div>
       </div>
     </section>
@@ -32,12 +32,12 @@
     <section class="section tint" aria-labelledby="t-why">
       <div class="wrap">
         <div class="section-head">
-          <div><h2 class="section-title" id="t-why">Why Daya</h2><p>Finding clothes that fit should never feel like guesswork.</p></div>
+          <div><h2 class="section-title" id="t-why" data-text="whyTitle">Why Daya</h2><p data-text="whySub">Finding clothes that fit should never feel like guesswork.</p></div>
         </div>
         <div class="why-grid">
-          <div class="why"><span class="why-num">01</span><h3>Chosen for your body</h3><p>Browse by body type, height and occasion, so every look is picked with your shape in mind.</p></div>
-          <div class="why"><span class="why-num">02</span><h3>A real stylist</h3><p>Real advice from a stylist, not an algorithm. Ask for help with fit, sizing and what to pair.</p></div>
-          <div class="why"><span class="why-num">03</span><h3>Straight to the shop</h3><p>Every look comes with notes on fabric and styling, and links you to where you can buy it.</p></div>
+          <div class="why"><span class="why-num">01</span><h3 data-text="why1Title">Chosen for your body</h3><p data-text="why1Text">Browse by body type, height and occasion, so every look is picked with your shape in mind.</p></div>
+          <div class="why"><span class="why-num">02</span><h3 data-text="why2Title">A real stylist</h3><p data-text="why2Text">Real advice from a stylist, not an algorithm. Ask for help with fit, sizing and what to pair.</p></div>
+          <div class="why"><span class="why-num">03</span><h3 data-text="why3Title">Straight to the shop</h3><p data-text="why3Text">Every look comes with notes on fabric and styling, and links you to where you can buy it.</p></div>
         </div>
       </div>
     </section>
@@ -45,7 +45,7 @@
     <section class="section" aria-labelledby="t-best">
       <div class="wrap">
         <div class="section-head">
-          <div><h2 class="section-title" id="t-best">Best looks</h2><p>Our favourites right now, chosen for fit, comfort and how good they make you feel.</p></div>
+          <div><h2 class="section-title" id="t-best" data-text="bestTitle">Best looks</h2><p data-text="bestSub">Our favourites right now, chosen for fit, comfort and how good they make you feel.</p></div>
           <a class="see-all" href="looks.html?collection=best">See all best looks</a>
         </div>
         <div class="grid four" id="grid-best"></div>
@@ -55,7 +55,7 @@
     <section class="section tint" aria-labelledby="t-aff">
       <div class="wrap">
         <div class="section-head">
-          <div><h2 class="section-title" id="t-aff">Most affordable</h2><p>Great outfits that are kind to your budget, starting with the lowest price.</p></div>
+          <div><h2 class="section-title" id="t-aff" data-text="affordableTitle">Most affordable</h2><p data-text="affordableSub">Great outfits that are kind to your budget, starting with the lowest price.</p></div>
           <a class="see-all" href="looks.html?collection=affordable">See all affordable looks</a>
         </div>
         <div class="grid four" id="grid-affordable"></div>
@@ -65,7 +65,7 @@
     <section class="section" aria-labelledby="t-deals">
       <div class="wrap">
         <div class="section-head">
-          <div><h2 class="section-title" id="t-deals">Best deals</h2><p>Looks with the biggest savings, from the largest discount down.</p></div>
+          <div><h2 class="section-title" id="t-deals" data-text="dealsTitle">Best deals</h2><p data-text="dealsSub">Looks with the biggest savings, from the largest discount down.</p></div>
           <a class="see-all" href="looks.html?collection=deals">See all deals</a>
         </div>
         <div class="grid four" id="grid-deals"></div>
@@ -75,7 +75,7 @@
     <section class="section tint" aria-labelledby="t-journal">
       <div class="wrap">
         <div class="section-head">
-          <div><h2 class="section-title" id="t-journal">From the journal</h2><p>Short reads on fit, style and feeling good in what you wear.</p></div>
+          <div><h2 class="section-title" id="t-journal" data-text="journalTitle">From the journal</h2><p data-text="journalSub">Short reads on fit, style and feeling good in what you wear.</p></div>
           <a class="see-all" href="journal.html">Read the journal</a>
         </div>
         <div class="posts" id="home-journal"></div>
@@ -83,8 +83,6 @@
     </section>
 
   </main>
-  <script src="content.js"></script>
-  <script src="layout.js"></script>
-  <script src="pages.js"></script>
+  <script src="boot.js"></script>
 </body>
 </html>

@@ -3,6 +3,10 @@
 (function () {
   var D = window.DAYA;
   var CFG = D.config;
+  var T = D.text || {};
+  function t(key, fallback) {
+    return T[key] != null && String(T[key]).trim() !== "" ? String(T[key]) : fallback;
+  }
   var BAG_KEY = "daya.bag";
 
   /* ---------- helpers ---------- */
@@ -130,7 +134,7 @@
         '<button type="button" class="bag-btn" id="bag-open" aria-controls="bag-drawer" aria-expanded="false" aria-label="Your saved looks">' + ICON_BAG + '<span class="bag-count" id="bag-count" hidden>0</span></button>' +
       '</div>' +
     '</header>' +
-    '<div class="styling-strip"><a href="stylist.html#book">One-on-one personal styling and guidance <span aria-hidden="true">→</span></a></div>' +
+    '<div class="styling-strip"><a href="stylist.html#book">' + esc(t("stripText", "One-on-one personal styling and guidance")) + ' <span aria-hidden="true">→</span></a></div>' +
 
     '<div class="scrim" id="scrim" hidden></div>' +
 
@@ -161,10 +165,10 @@
   var bandHTML =
     '<section class="stylist-band" aria-labelledby="band-title">' +
       '<div class="wrap band-inner">' +
-        '<div><h2 id="band-title">Didn’t find what you were looking for?</h2>' +
-        '<p>That’s okay. Tell us what you’re dressing for and a stylist will find options that fit you.</p></div>' +
+        '<div><h2 id="band-title">' + esc(t("bandTitle", "Didn’t find what you were looking for?")) + '</h2>' +
+        '<p>' + esc(t("bandText", "That’s okay. Tell us what you’re dressing for and a stylist will find options that fit you.")) + '</p></div>' +
         '<div class="band-actions">' +
-          '<a class="btn btn-gold" href="' + wa + '"' + waAttrs + '>Chat with a stylist</a>' +
+          '<a class="btn btn-gold" href="' + wa + '"' + waAttrs + '>' + esc(t("bandButton", "Chat with a stylist")) + '</a>' +
         '</div>' +
       '</div>' +
     '</section>';
@@ -175,7 +179,7 @@
     (showBand ? bandHTML : "") +
     '<footer class="site-footer"><div class="wrap foot-inner">' +
       '<p class="foot-logo">Daya</p>' +
-      '<p class="foot-tag">Womenswear. Style for your real life.</p>' +
+      '<p class="foot-tag">' + esc(t("footerTag", "Womenswear. Style for your real life.")) + '</p>' +
       '<nav class="foot-nav" aria-label="Footer"><a href="looks.html">Looks</a><a href="journal.html">Journal</a><a href="size-chart.html">Size chart</a><a href="calculator.html">Body calculator</a><a href="stylist.html">Stylist</a></nav>' +
     '</div></footer>';
 
@@ -300,6 +304,16 @@
   document.addEventListener("daya:bag", function () { refreshBadge(); refreshSaveButtons(); });
   window.addEventListener("storage", function (e) { if (e.key === BAG_KEY) { refreshBadge(); refreshSaveButtons(); if (openKey === "bag") renderBag(); } });
   refreshBadge();
+
+  /* ---------- text and photos edited in the admin ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-text]"), function (n) {
+    var v = T[n.getAttribute("data-text")];
+    if (v != null && String(v).trim() !== "") n.textContent = v;
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-img]"), function (n) {
+    var v = T[n.getAttribute("data-img")];
+    if (v && n.getAttribute("src") !== v) n.setAttribute("src", img(v, 900));
+  });
 
   /* ---------- public bits for the page scripts ---------- */
   window.DayaUI = {

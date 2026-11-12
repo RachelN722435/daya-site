@@ -7,7 +7,8 @@
    4. looks         → the outfits shown across the site
    5. articles      → the journal (short write-ups)
 
-   Edit, save, redeploy. No other file needs to change.
+   Once the admin (/admin) is set up, this file only provides the STARTING
+   content. After you save in the admin, the admin's version is what visitors see.
    ========================================================================== */
 
 window.DAYA = {
@@ -49,6 +50,39 @@ window.DAYA = {
        email: where booking requests should be sent */
     whatsapp: "2348089484402",
     email: "nesse.management@gmail.com"
+  },
+
+  /* ---------- PAGE TEXT (editable in the admin under "Page text") ---------- */
+  text: {
+    heroTitle: "Every body is Daya body.",
+    heroText: "Clothing chosen for your body, comfort and lifestyle. Find outfits for every occasion and shop with more confidence.",
+    heroBtn1: "Find your look",
+    heroBtn2: "Find your size",
+    heroImage: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406655212-083v5l.jpg",
+
+    whyTitle: "Why Daya",
+    whySub: "Finding clothes that fit should never feel like guesswork.",
+    why1Title: "Chosen for your body",
+    why1Text: "Browse by body type, height and occasion, so every look is picked with your shape in mind.",
+    why2Title: "A real stylist",
+    why2Text: "Real advice from a stylist, not an algorithm. Ask for help with fit, sizing and what to pair.",
+    why3Title: "Straight to the shop",
+    why3Text: "Every look comes with notes on fabric and styling, and links you to where you can buy it.",
+
+    bestTitle: "Best looks",
+    bestSub: "Our favourites right now, chosen for fit, comfort and how good they make you feel.",
+    affordableTitle: "Most affordable",
+    affordableSub: "Great outfits that are kind to your budget, starting with the lowest price.",
+    dealsTitle: "Best deals",
+    dealsSub: "Looks with the biggest savings, from the largest discount down.",
+    journalTitle: "From the journal",
+    journalSub: "Short reads on fit, style and feeling good in what you wear.",
+
+    stripText: "One-on-one personal styling and guidance",
+    bandTitle: "Didn\u2019t find what you were looking for?",
+    bandText: "That\u2019s okay. Tell us what you\u2019re dressing for and a stylist will find options that fit you.",
+    bandButton: "Chat with a stylist",
+    footerTag: "Womenswear. Style for your real life."
   },
 
   /* ---------- 2. BODY TYPES ---------- */
