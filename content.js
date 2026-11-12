@@ -58,7 +58,12 @@ window.DAYA = {
     heroText: "Outfits chosen to fit and flatter, so you can shop with confidence and love what you buy.",
     heroBtn1: "Shop by occasion",
     heroBtn2: "Find your size",
+    // Optional wide photo behind the top of the homepage. Leave empty for a plain background.
+    heroBannerImage: "",
     heroImage: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406655212-083v5l.jpg",
+
+    bodiesTitle: "Shop by body type",
+    bodiesSub: "Pick the shape closest to yours and see looks chosen to flatter it.",
 
     occasionsTitle: "What are you dressing for?",
     occasionsSub: "Choose the moment and we’ll show you looks that suit it.",

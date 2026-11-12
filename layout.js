@@ -346,6 +346,14 @@
     if (v && n.getAttribute("src") !== v) n.setAttribute("src", img(v, 900));
   });
 
+  Array.prototype.forEach.call(document.querySelectorAll("[data-bg]"), function (n) {
+    var v = T[n.getAttribute("data-bg")];
+    if (!v) return;
+    var u = String(img(v, 1600)).replace(/["'()\\\s]/g, function (ch) { return "%" + ch.charCodeAt(0).toString(16).toUpperCase(); });
+    n.style.backgroundImage = "url(" + u + ")";
+    n.classList.add("has-banner");
+  });
+
   /* ---------- public bits for the page scripts ---------- */
   window.DayaUI = {
     esc: esc, money: money, byId: byId, discount: discount,

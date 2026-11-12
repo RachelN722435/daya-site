@@ -256,7 +256,7 @@
   /* ---------- tab: page text ---------- */
   const TEXT_GROUPS = [
     { title: "Top of the homepage", fields: [
-      ["heroTitle", "Headline"], ["heroText", "Paragraph", 3], ["heroBtn1", "First button"], ["heroBtn2", "Second button"], ["heroImage", "Hero photo", "image"] ] },
+      ["heroTitle", "Headline"], ["heroText", "Paragraph", 3], ["heroBtn1", "First button"], ["heroBtn2", "Second button"], ["heroBannerImage", "Top banner photo (wide, optional)", "image"], ["heroImage", "Hero photo (shown when there is no banner)", "image"] ] },
     { title: "“Why Daya” section", fields: [
       ["whyTitle", "Heading"], ["whySub", "Line under the heading"],
       ["why1Title", "Point 1 title"], ["why1Text", "Point 1 text", 2],
@@ -264,6 +264,7 @@
       ["why3Title", "Point 3 title"], ["why3Text", "Point 3 text", 2] ] },
     { title: "Homepage sections", fields: [
       ["occasionsTitle", "Occasions: heading"], ["occasionsSub", "Occasions: line under it", 2],
+      ["bodiesTitle", "Body types: heading"], ["bodiesSub", "Body types: line under it", 2],
       ["bestTitle", "Best looks: heading"], ["bestSub", "Best looks: line under it", 2],
       ["affordableTitle", "Most affordable: heading"], ["affordableSub", "Most affordable: line under it", 2],
       ["toolsTitle", "Calculator and size chart: heading"], ["toolsSub", "Calculator and size chart: line under it", 2],
@@ -420,16 +421,17 @@
           c.looks.forEach((l) => { if (key === "occasions") { if (l.occasion === item.slug) l.occasion = ""; } else l.bodies = l.bodies.filter((x) => x !== item.slug); });
           list.splice(i, 1); rerender(); touch();
         } }, "Delete"));
-      return h("div", { class: "a-line " + (withDesc ? "with-desc" : "no-desc") }, name, desc, tools);
+      const photo = imageField("Photo (optional)", () => item.image, (v) => { item.image = v; });
+      return h("div", { class: "a-row" }, h("div", { class: "a-line " + (withDesc ? "with-desc" : "no-desc") }, name, desc, tools), photo);
     });
     return h("section", { class: "a-card" }, h("h2", {}, title), h("p", { class: "a-sub" }, sub), rows,
-      h("button", { type: "button", class: "a-btn a-add", onclick: () => { list.push(withDesc ? { slug: "", name: "", desc: "" } : { slug: "", name: "" }); rerender(); touch(); } }, (/^[aeiou]/i.test(noun) ? "Add an " : "Add a ") + noun));
+      h("button", { type: "button", class: "a-btn a-add", onclick: () => { list.push(withDesc ? { slug: "", name: "", desc: "", image: "" } : { slug: "", name: "", image: "" }); rerender(); touch(); } }, (/^[aeiou]/i.test(noun) ? "Add an " : "Add a ") + noun));
   }
 
   function listsTab(panel) {
     panel.append(
-      listCard("Occasions", "These appear as choices on the Looks page and in the Browse menu. Renaming keeps your looks linked.", "occasions", false, "occasion"),
-      listCard("Body types", "Each one gets a short description on the size chart page.", "bodyTypes", true, "body type"));
+      listCard("Occasions", "These appear as choices on the Looks page and in the Browse menu. Add a photo and it shows on the homepage tile and at the top of that occasion’s looks. Renaming keeps your looks linked.", "occasions", false, "occasion"),
+      listCard("Body types", "Each one gets a short description on the size chart page. Add a photo and it shows on the homepage tile, the size chart and at the top of that body type’s looks.", "bodyTypes", true, "body type"));
   }
 
   /* ---------- tab: affirmation + contact ---------- */

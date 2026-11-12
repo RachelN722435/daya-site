@@ -21,6 +21,13 @@
     if (!el) return;
     el.innerHTML = list.slice(0, max || 4).map(U.lookCard).join("");
   }
+  /* a photo tile for an occasion or body type (plain card when it has no photo) */
+  function tile(href, item, n) {
+    var count = n ? n + (n === 1 ? " look" : " looks") : "Coming soon";
+    var photo = item.image ? '<img class="occ-img" src="' + esc(U.img(item.image, 600)) + '" alt="" loading="lazy" decoding="async">' : "";
+    return '<a class="occ-tile' + (item.image ? " has-img" : "") + '" href="' + href + '">' + photo +
+      '<span class="occ-name">' + esc(item.name) + '</span><span class="occ-count">' + count + '</span></a>';
+  }
   function fmtDate(iso) {
     var d = new Date(iso + "T00:00:00");
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
@@ -45,9 +52,15 @@
         var shown = D.occasions.filter(function (o) { return counts[o.slug]; });
         if (!shown.length) shown = D.occasions;
         tiles.innerHTML = shown.map(function (o) {
-          var n = counts[o.slug] || 0;
-          return '<a class="occ-tile" href="looks.html?occasion=' + encodeURIComponent(o.slug) + '"><span class="occ-name">' + esc(o.name) + '</span>' +
-            '<span class="occ-count">' + (n ? n + (n === 1 ? " look" : " looks") : "Coming soon") + '</span></a>';
+          return tile("looks.html?occasion=" + encodeURIComponent(o.slug), o, counts[o.slug] || 0);
+        }).join("");
+      }
+      var btiles = $("#body-tiles");
+      if (btiles) {
+        var bcounts = {};
+        D.looks.forEach(function (l) { (l.bodies || []).forEach(function (b) { bcounts[b] = (bcounts[b] || 0) + 1; }); });
+        btiles.innerHTML = D.bodyTypes.map(function (b) {
+          return tile("looks.html?body=" + encodeURIComponent(b.slug), b, bcounts[b.slug] || 0);
         }).join("");
       }
       fillGrid("#grid-best", best(), 4);
@@ -95,8 +108,17 @@
         if (state.occ) bits.push(U.occasionName(state.occ));
         $("#looks-title").textContent = bits.length ? (state.col ? title + ": " : "") + bits.join(", ") : title;
 
-        var desc = "";
-        for (var i = 0; i < D.bodyTypes.length; i++) if (D.bodyTypes[i].slug === state.body) desc = D.bodyTypes[i].desc;
+        var desc = "", banner = "";
+        for (var i = 0; i < D.bodyTypes.length; i++) if (D.bodyTypes[i].slug === state.body) { desc = D.bodyTypes[i].desc; banner = D.bodyTypes[i].image || ""; }
+        for (var k = 0; k < D.occasions.length; k++) if (D.occasions[k].slug === state.occ && D.occasions[k].image) banner = D.occasions[k].image;
+        var head = $("#looks-head");
+        if (head) {
+          if (banner) {
+            var bu = String(U.img(banner, 1400)).replace(/["'()\\\s]/g, function (ch) { return "%" + ch.charCodeAt(0).toString(16).toUpperCase(); });
+            head.style.backgroundImage = "url(" + bu + ")";
+          } else head.style.backgroundImage = "";
+          head.classList.toggle("has-banner", !!banner);
+        }
         $("#looks-desc").textContent = desc || "Outfits chosen for different bodies and moments. Save the ones you love to your bag.";
 
         var list = D.looks.slice();
@@ -222,7 +244,8 @@
     /* ---------------- SIZE CHART ---------------- */
     sizechart: function () {
       $("#body-guide").innerHTML = D.bodyTypes.map(function (b) {
-        return '<div class="guide-item"><h3><a href="looks.html?body=' + b.slug + '">' + esc(b.name) + '</a></h3><p>' + esc(b.desc) + '</p></div>';
+        var photo = b.image ? '<img class="guide-img" src="' + esc(U.img(b.image, 400)) + '" alt="" loading="lazy" decoding="async">' : "";
+        return '<div class="guide-item' + (b.image ? " has-img" : "") + '">' + photo + '<div><h3><a href="looks.html?body=' + b.slug + '">' + esc(b.name) + '</a></h3><p>' + esc(b.desc) + '</p></div></div>';
       }).join("");
     },
 

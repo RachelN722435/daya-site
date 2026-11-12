@@ -57,6 +57,9 @@ body.admin { background: var(--paper); padding-bottom: 96px; }
 /* simple rows (occasions, body types) */
 .a-line { display: grid; gap: 10px; grid-template-columns: 1fr; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .a-line:last-child { border-bottom: 0; }
+.a-row { border-bottom: 1px solid var(--line); padding: 4px 0 14px; }
+.a-row:last-child { border-bottom: 0; }
+.a-row > .a-line { border-bottom: 0; }
 @media (min-width: 720px) { .a-line.with-desc { grid-template-columns: 200px 1fr auto; align-items: start; } .a-line.no-desc { grid-template-columns: 1fr auto; align-items: center; } }
 
 /* images */

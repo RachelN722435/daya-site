@@ -476,3 +476,38 @@ section[id] { scroll-margin-top: calc(var(--header-h) + 12px); }
   .filter-inner { grid-template-columns: repeat(3, minmax(0, 1fr)) auto; }
   .filter-inner .fb-field:nth-child(3) { grid-column: auto; }
 }
+
+
+/* ---------- Photos: top banner, occasion + body type tiles ---------- */
+.hero.has-banner { position: relative; padding: 84px 0 96px; background-size: cover; background-position: center; isolation: isolate; }
+.hero.has-banner::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(90deg, rgba(247,237,229,.94) 0%, rgba(247,237,229,.82) 48%, rgba(247,237,229,.2) 100%);
+}
+.hero.has-banner .hero-art { display: none; }
+.hero.has-banner .hero-grid { grid-template-columns: minmax(0, 1fr); }
+.hero.has-banner .hero-grid > div { max-width: 640px; }
+@media (max-width: 759px) {
+  .hero.has-banner { padding: 56px 0 64px; }
+  .hero.has-banner::before { background: linear-gradient(180deg, rgba(247,237,229,.92) 0%, rgba(247,237,229,.86) 100%); }
+}
+
+.occ-tile { position: relative; }
+.occ-tile.has-img { min-height: 168px; padding: 0; overflow: hidden; justify-content: flex-end; border-color: transparent; }
+.occ-tile.has-img .occ-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.occ-tile.has-img:hover .occ-img { transform: scale(1.04); }
+.occ-tile.has-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(31,31,31,0) 35%, rgba(31,31,31,.72) 100%); }
+.occ-tile.has-img .occ-name, .occ-tile.has-img .occ-count { position: relative; z-index: 1; color: var(--white); padding-inline: 18px; }
+.occ-tile.has-img .occ-name { text-shadow: 0 1px 8px rgba(31,31,31,.35); }
+.occ-tile.has-img .occ-count { padding-bottom: 16px; opacity: .92; }
+
+.guide-item.has-img { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 16px; align-items: center; }
+.guide-img { width: 84px; height: 104px; object-fit: cover; border-radius: 42px 42px 12px 12px; background: var(--lilac); }
+
+.page-head.has-banner {
+  position: relative; isolation: isolate; margin-top: 20px; padding: 48px 28px; border-radius: 26px; overflow: hidden;
+  background-size: cover; background-position: center; color: var(--white);
+}
+.page-head.has-banner::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(31,31,31,.78) 0%, rgba(31,31,31,.45) 60%, rgba(31,31,31,.2) 100%); }
+.page-head.has-banner .page-title, .page-head.has-banner .lede { color: var(--white); }
+.page-head.has-banner .lede { margin-bottom: 0; max-width: 52ch; }
