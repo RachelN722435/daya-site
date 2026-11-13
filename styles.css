@@ -719,3 +719,12 @@ body[data-page="shop"] .grid { margin-bottom: 20px; }
   .header-right { gap: 2px; }
 }
 @media (max-width: 520px) { .logo { font-size: 1.8rem; } .cur-pick select { max-width: 82px; font-size: .78rem; } }
+
+/* Fit Card */
+.fit-card { margin: 18px 0 8px; padding: 20px 22px; background: var(--white); border: 1px solid var(--gold-deep); border-radius: 22px; }
+.fit-card h2 { font-size: 1.6rem; margin: 0 0 8px; }
+.fit-card dl { margin: 0; display: grid; gap: 0; }
+.fit-card dl > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+.fit-card dt { font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-ink); padding-top: 3px; }
+.fit-card dd { margin: 0; }
+.fit-foot { margin: 12px 0 0; font-size: .95rem; color: var(--ink-soft); }

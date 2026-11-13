@@ -33,6 +33,18 @@
       '</article>';
   }
 
+  /* the Fit Card: everything a shopper needs to know about fit, in one place */
+  function fitCard(l, suits) {
+    var rows = [
+      ["Suits", suits], ["Why it flatters", l.fitNote], ["Fabric", l.fabric],
+      ["Length", l.length], ["Model wears", l.modelInfo], ["Sizing tip", l.sizeTip]
+    ].filter(function (r) { return r[1]; });
+    if (!rows.length) return "";
+    return '<section class="fit-card" aria-labelledby="fit-h"><h2 id="fit-h">Fit Card</h2><dl>' +
+      rows.map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join("") +
+      '</dl><p class="fit-foot">Not sure it’s right for you? <a href="stylist.html?look=' + encodeURIComponent(l.id) + '#book">Ask a stylist about this look</a> or <a href="size-chart.html">check the size chart</a>.</p></section>';
+  }
+
   var pages = {
 
     /* ---------------- HOME ---------------- */
@@ -264,8 +276,7 @@
             (l.occasions.length > 1 ? '<p class="look-fact"><strong>Great for</strong> ' + esc(l.occasions.map(U.occasionName).join(", ")) + '</p>' : "") +
             (l.vibes.length ? '<p class="look-fact"><strong>Vibe</strong> ' + esc(l.vibes.map(U.vibeName).join(", ")) + '</p>' : "") +
             (l.colours.length ? '<p class="look-fact"><strong>Colour</strong> ' + esc(l.colours.join(", ")) + '</p>' : "") +
-            (l.fabric ? '<p class="look-fact"><strong>Fabric</strong> ' + esc(l.fabric) + '</p>' : "") +
-            (suits ? '<p class="look-fact"><strong>Suits</strong> ' + esc(suits) + '</p>' : "") +
+            fitCard(l, suits) +
             (l.styling ? '<h2 class="look-sub">How to style it</h2><p class="look-note">' + esc(l.styling) + '</p>' : "") +
             '<div class="look-actions">' + retailer +
               '<button type="button" class="btn btn-ghost" id="look-save" data-save="' + esc(l.id) + '"></button>' +

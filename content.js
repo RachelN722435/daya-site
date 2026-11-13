@@ -151,6 +151,7 @@ window.DAYA = {
      bodies        → body type slugs this look suits
      url           → link to the retailer (leave "" if none; the card will offer "Ask a stylist")
      fabric        → a few words, e.g. "Satin, stretch" (shown on the look's page)
+     fitNote, length, modelInfo, sizeTip → the optional lines of the Fit Card (admin: Looks tab)
      styling       → a short note on how to style it (shown on the look's page)
      image         → the photo. Replace the sample photos with each look's own.
 
