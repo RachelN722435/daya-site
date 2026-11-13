@@ -19,10 +19,9 @@
           <h1 data-text="heroTitle">Every body is Daya body.</h1>
           <p class="lede" data-text="heroText">Outfits chosen to fit and flatter, so you can shop with confidence and love what you buy.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#occasions" data-text="heroBtn1">Shop by occasion</a>
+            <a class="btn btn-primary" href="occasions.html" data-text="heroBtn1">Shop by occasion</a>
             <a class="btn btn-ghost" href="calculator.html" data-text="heroBtn2">Find your size</a>
           </div>
-          <p class="hero-link"><a href="stylist.html#book">Or talk to a stylist <span aria-hidden="true">→</span></a></p>
         </div>
         <div class="hero-art">
           <img data-img="heroImage" src="https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406655212-083v5l.jpg" alt="A woman in an elegant outfit" width="600" height="800" fetchpriority="high" decoding="async">
@@ -37,90 +36,76 @@
       </div>
     </section>
 
-    <section class="section tint" id="occasions" aria-labelledby="t-occ">
+    <section class="section" aria-label="Shop">
       <div class="wrap">
-        <div class="section-head">
-          <div><h2 class="section-title" id="t-occ" data-text="occasionsTitle">What are you dressing for?</h2><p data-text="occasionsSub">Choose the moment and we’ll show you looks that suit it.</p></div>
+        <div class="home-tiles">
+          <a class="home-tile" href="occasions.html"><img data-img="tile1Image" src="tile-occasion.jpg" alt="" width="800" height="800" loading="lazy" decoding="async"><span class="home-tile-title" data-text="tile1Title">Shop by Occasion</span><span class="home-tile-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="home-tile" href="vibes.html"><img data-img="tile2Image" src="tile-vibe.jpg" alt="" width="800" height="800" loading="lazy" decoding="async"><span class="home-tile-title" data-text="tile2Title">Shop by Era &amp; Vibe</span><span class="home-tile-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="home-tile" href="body-types.html"><img data-img="tile3Image" src="tile-body.jpg" alt="" width="800" height="800" loading="lazy" decoding="async"><span class="home-tile-title" data-text="tile3Title">Shop by Body Type</span><span class="home-tile-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <a class="home-tile" href="marketplace.html"><img data-img="tile4Image" src="tile-market.jpg" alt="" width="800" height="800" loading="lazy" decoding="async"><span class="home-tile-title" data-text="tile4Title">Explore the Marketplace</span><span class="home-tile-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
         </div>
-        <div class="occ-tiles" id="occ-tiles"></div>
       </div>
     </section>
 
-    <section class="section" id="body-types" aria-labelledby="t-bodies">
+    <section class="section tint" aria-labelledby="t-aff">
       <div class="wrap">
         <div class="section-head">
-          <div><h2 class="section-title" id="t-bodies" data-text="bodiesTitle">Shop by body type</h2><p data-text="bodiesSub">Pick the shape closest to yours and see looks chosen to flatter it.</p></div>
-          <a class="see-all" href="calculator.html">Not sure? Use the calculator</a>
+          <div><h2 class="section-title" id="t-aff" data-text="affordableTitle">Most affordable</h2><p data-text="affordableSub">Great outfits that are kind to your budget, starting with the lowest price.</p></div>
+          <a class="see-all" href="marketplace.html?collection=affordable">See all affordable looks</a>
         </div>
-        <div class="occ-tiles" id="body-tiles"></div>
+        <div class="grid four" id="grid-affordable"></div>
       </div>
     </section>
 
-    <section class="section tint" aria-labelledby="t-best">
+    <section class="section" aria-labelledby="t-deals">
       <div class="wrap">
         <div class="section-head">
-          <div><h2 class="section-title" id="t-best" data-text="bestTitle">Best looks</h2><p data-text="bestSub">Our favourites right now. Each one is checked for fabric, fit and sizing before it’s listed.</p></div>
-          <a class="see-all" href="looks.html?collection=best">See all best looks</a>
+          <div><h2 class="section-title" id="t-deals" data-text="dealsTitle">Best deals</h2><p data-text="dealsSub">Looks with the biggest savings, from the largest discount down.</p></div>
+          <a class="see-all" href="marketplace.html?collection=deals">See all deals</a>
         </div>
-        <div class="grid four" id="grid-best"></div>
-      </div>
-    </section>
-
-    <section class="section" aria-labelledby="t-why">
-      <div class="wrap">
-        <div class="section-head">
-          <div><h2 class="section-title" id="t-why" data-text="whyTitle">Why Daya</h2><p data-text="whySub">Finding clothes that fit should never feel like guesswork.</p></div>
-        </div>
-        <div class="why-grid">
-          <div class="why"><span class="why-num">01</span><h3 data-text="why1Title">Chosen for your body</h3><p data-text="why1Text">Browse by body type, height and occasion, so every look is picked with your shape in mind.</p></div>
-          <div class="why"><span class="why-num">02</span><h3 data-text="why2Title">A real stylist</h3><p data-text="why2Text">Real advice from a stylist, not an algorithm. Ask for help with fit, sizing and what to pair.</p></div>
-          <div class="why"><span class="why-num">03</span><h3 data-text="why3Title">Straight to the shop</h3><p data-text="why3Text">Every look comes with notes on fabric and styling, and links you to where you can buy it.</p></div>
-        </div>
+        <div class="grid four" id="grid-deals"></div>
       </div>
     </section>
 
     <section class="section tint" aria-labelledby="t-tools">
       <div class="wrap">
         <div class="section-head">
-          <div><h2 class="section-title" id="t-tools" data-text="toolsTitle">Find your fit</h2><p data-text="toolsSub">Two quick tools and a real person, so you know it will fit before you buy.</p></div>
+          <div><h2 class="section-title" id="t-tools" data-text="toolsTitle">Find your fit</h2><p data-text="toolsSub">Two quick tools, so you know it will fit before you buy.</p></div>
         </div>
-        <div class="tool-grid">
+        <div class="tool-grid two">
           <a class="tool" href="calculator.html"><span class="tool-kicker">Body calculator</span><span class="tool-title">Find your body type</span><span class="tool-text">Enter a few measurements and see the shapes and cuts that suit you best.</span><span class="tool-go">Try it <span aria-hidden="true">→</span></span></a>
           <a class="tool" href="size-chart.html"><span class="tool-kicker">Size chart</span><span class="tool-title">Find your size</span><span class="tool-text">Match your measurements to the right size, so you can order with confidence.</span><span class="tool-go">See the chart <span aria-hidden="true">→</span></span></a>
-          <a class="tool" href="stylist.html#book"><span class="tool-kicker">Personal stylist</span><span class="tool-title">Talk to a real person</span><span class="tool-text">Book a stylist or chat on WhatsApp for advice on fit, sizing and what to pair.</span><span class="tool-go">Get help <span aria-hidden="true">→</span></span></a>
         </div>
       </div>
     </section>
 
-    <section class="section" aria-labelledby="t-aff">
-      <div class="wrap">
-        <div class="section-head">
-          <div><h2 class="section-title" id="t-aff" data-text="affordableTitle">Most affordable</h2><p data-text="affordableSub">Great outfits that are kind to your budget, starting with the lowest price.</p></div>
-          <a class="see-all" href="looks.html?collection=affordable">See all affordable looks</a>
+    <section class="section" aria-label="About Daya and the diary">
+      <div class="wrap duo">
+        <div class="duo-card">
+          <h2 class="section-title" data-text="whyTitle">Why Daya</h2>
+          <p data-text="whySub">Finding clothes that fit should never feel like guesswork.</p>
+          <button type="button" class="btn btn-ghost" id="why-open" aria-haspopup="dialog" aria-expanded="false">Why Daya <span aria-hidden="true">→</span></button>
         </div>
-        <div class="grid four" id="grid-affordable"></div>
+        <div class="duo-card">
+          <h2 class="section-title" data-text="diaryTitle">Daya’s Diary</h2>
+          <p data-text="diarySub">Short, kind reads on fit, style and feeling good in what you wear. Tips, stories and the occasional pep talk.</p>
+          <a class="btn btn-ghost" href="diary.html"><span data-text="diaryBtn">Read the diary</span> <span aria-hidden="true">→</span></a>
+        </div>
       </div>
     </section>
 
-    <section class="section tint" aria-labelledby="t-deals">
-      <div class="wrap">
-        <div class="section-head">
-          <div><h2 class="section-title" id="t-deals" data-text="dealsTitle">Best deals</h2><p data-text="dealsSub">Looks with the biggest savings, from the largest discount down.</p></div>
-          <a class="see-all" href="looks.html?collection=deals">See all deals</a>
+    <div class="modal" id="why-modal" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="why-h">
+        <button type="button" class="icon-btn modal-x" id="why-close" aria-label="Close">✕</button>
+        <h2 id="why-h" data-text="whyTitle">Why Daya</h2>
+        <p class="modal-sub" data-text="whySub">Finding clothes that fit should never feel like guesswork.</p>
+        <div class="why-list">
+          <div class="why"><span class="why-num">01</span><h3 data-text="why1Title">Chosen for your body</h3><p data-text="why1Text">Browse by body type, height and occasion, so every look is picked with your shape in mind.</p></div>
+          <div class="why"><span class="why-num">02</span><h3 data-text="why2Title">A real stylist</h3><p data-text="why2Text">Real advice from a stylist, not an algorithm. Ask for help with fit, sizing and what to pair.</p></div>
+          <div class="why"><span class="why-num">03</span><h3 data-text="why3Title">Straight to the shop</h3><p data-text="why3Text">Every look comes with notes on fabric and styling, and links you to where you can buy it.</p></div>
         </div>
-        <div class="grid four" id="grid-deals"></div>
       </div>
-    </section>
-
-    <section class="section" aria-labelledby="t-journal">
-      <div class="wrap">
-        <div class="section-head">
-          <div><h2 class="section-title" id="t-journal" data-text="journalTitle">From the journal</h2><p data-text="journalSub">Short reads on fit, style and feeling good in what you wear.</p></div>
-          <a class="see-all" href="journal.html">Read the journal</a>
-        </div>
-        <div class="posts" id="home-journal"></div>
-      </div>
-    </section>
+    </div>
 
   </main>
   <script src="boot.js"></script>

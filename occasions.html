@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop by Occasion | Daya</title>
+  <meta name="description" content="Choose your occasions and find outfits that suit them.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="shop" data-mode="occasions">
+  <main id="main">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true"> › </span><span id="shop-crumb" aria-current="page"></span></nav>
+      <div class="page-head" id="shop-head">
+        <h1 class="page-title" id="shop-title">Shop by Occasion</h1>
+        <p class="lede" id="shop-desc"></p>
+      </div>
+      <section class="shop-filters" id="shop-filters" aria-label="Filters"></section>
+      <div class="shop-bar">
+        <p class="result-count" id="shop-count" aria-live="polite"></p>
+        <div class="shop-bar-right">
+          <button type="button" class="linklike" id="f-reset" hidden>Clear all filters</button>
+          <label class="sort-pick"><span class="sr-only">Sort by</span>
+            <select id="f-sort" aria-label="Sort by">
+              <option value="">Our picks</option>
+              <option value="low">Lowest price</option>
+              <option value="high">Highest price</option>
+              <option value="deal">Biggest saving</option>
+            </select></label>
+        </div>
+      </div>
+      <div class="grid four" id="shop-grid"></div>
+      <div class="empty" id="shop-empty" hidden>
+        <h2>Nothing matches yet</h2>
+        <p>We haven’t added a look for that combination. Try removing a filter, or chat with a stylist below and we’ll find something for you.</p>
+      </div>
+    </div>
+  </main>
+  <script src="boot.js"></script>
+</body>
+</html>

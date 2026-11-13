@@ -15,9 +15,44 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  /* ---------- currencies: each look has its own; visitors can switch the whole site ---------- */
+  var CURS = {
+    NGN: { sym: "₦", label: "Naira (₦)" },
+    USD: { sym: "$", label: "Dollar ($)" },
+    GBP: { sym: "£", label: "Pound (£)" },
+    EUR: { sym: "€", label: "Euro (€)" }
+  };
+  var RATE_KEYS = { USD: "usdToNgn", GBP: "gbpToNgn", EUR: "eurToNgn" };
+  var RATE_DEFAULT = { USD: 1500, GBP: 1900, EUR: 1650 };
+  var CUR_KEY = "daya.cur";
+  function rateOf(c) {
+    if (!c || c === "NGN") return 1;
+    var r = Number(CFG[RATE_KEYS[c]]);
+    return r > 0 ? r : (RATE_DEFAULT[c] || 1);
+  }
+  function curPref() {
+    try { var v = localStorage.getItem(CUR_KEY); return CURS[v] ? v : ""; } catch (e) { return ""; }
+  }
+  function setCurPref(v) { try { if (v) localStorage.setItem(CUR_KEY, v); else localStorage.removeItem(CUR_KEY); } catch (e) { /* ignore */ } }
+  function displayCurrency() { return curPref() || "NGN"; }
+  function toNgn(amount, cur) { return amount * rateOf(cur); }
+  function fmtNum(n, cur) {
+    var digits = cur === "NGN" || n >= 100 ? 0 : 2;
+    return Number(n).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: digits });
+  }
   function money(amount, currency) {
-    if (currency === "USD") return "$" + amount.toLocaleString("en-US");
-    return "₦" + amount.toLocaleString("en-NG");
+    var c = CURS[currency] ? currency : "NGN";
+    return CURS[c].sym + fmtNum(amount, c);
+  }
+  /* a look's price (or old price) in the visitor's chosen currency; "≈" marks a converted amount */
+  function price(look, field) {
+    var amount = look[field || "price"];
+    var own = CURS[look.currency] ? look.currency : "NGN";
+    var target = curPref() || own;
+    if (target === own) return money(amount, own);
+    var conv = (amount * rateOf(own)) / rateOf(target);
+    if (target === "NGN") conv = Math.round(conv / 100) * 100;
+    return "≈ " + CURS[target].sym + fmtNum(conv, target);
   }
   function byId(id) {
     for (var i = 0; i < D.looks.length; i++) if (D.looks[i].id === id) return D.looks[i];
@@ -29,6 +64,11 @@
   }
   function bodyName(slug) {
     for (var i = 0; i < D.bodyTypes.length; i++) if (D.bodyTypes[i].slug === slug) return D.bodyTypes[i].name;
+    return slug;
+  }
+  function vibeName(slug) {
+    var list = D.vibes || [];
+    for (var i = 0; i < list.length; i++) if (list[i].slug === slug) return list[i].name;
     return slug;
   }
   function discount(look) {
@@ -109,46 +149,56 @@
         '<div class="card-body">' +
           '<p class="card-meta">' + esc(occasionName(look.occasion)) + (look.brand ? " · " + esc(look.brand) : "") + '</p>' +
           '<h3 class="card-title"><a href="look.html?id=' + encodeURIComponent(look.id) + '">' + esc(look.name) + '</a></h3>' +
-          '<p class="card-price"><span class="now">' + money(look.price, look.currency) + '</span>' +
-            (look.was ? ' <s class="was"><span class="sr-only">was </span>' + money(look.was, look.currency) + '</s>' : "") + '</p>' +
+          '<p class="card-price"><span class="now">' + price(look, "price") + '</span>' +
+            (look.was ? ' <s class="was"><span class="sr-only">was </span>' + price(look, "was") + '</s>' : "") + '</p>' +
         '</div>' +
       '</article>'
     );
   }
 
   /* ---------- build the chrome ---------- */
-  var bodyLinks = D.bodyTypes.map(function (b) {
-    return '<li><a href="looks.html?body=' + b.slug + '">' + esc(b.name) + '</a></li>';
-  }).join("");
-  var occLinks = D.occasions.map(function (o) {
-    return '<li><a href="looks.html?occasion=' + o.slug + '">' + esc(o.name) + '</a></li>';
+  var PAGE = document.body.getAttribute("data-page");
+  function links(list, file, param) {
+    return list.map(function (x) {
+      return '<li><a href="' + file + '?' + param + '=' + encodeURIComponent(x.slug) + '">' + esc(x.name) + '</a></li>';
+    }).join("");
+  }
+  function acc(name, file, allLabel, items) {
+    return '<details class="acc"><summary>' + name + '</summary><ul class="acc-list">' +
+      '<li><a class="acc-all" href="' + file + '">' + allLabel + ' <span aria-hidden="true">→</span></a></li>' + items + '</ul></details>';
+  }
+  var ICON_ARROW = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  var curOptions = '<option value="">Listed</option>' + Object.keys(CURS).map(function (k) {
+    return '<option value="' + k + '"' + (curPref() === k ? " selected" : "") + '>' + CURS[k].sym + ' ' + k + '</option>';
   }).join("");
 
   var headerHTML =
     '<a class="skip" href="#main">Skip to content</a>' +
     '<header class="site-header">' +
       '<button type="button" class="menu-btn" id="menu-open" aria-controls="menu-drawer" aria-expanded="false">' + ICON_MENU + '<span>Browse</span></button>' +
-      '<a class="logo" href="index.html" aria-label="Daya, home">Daya</a>' +
+      '<a class="logo" href="index.html" aria-label="Daya, home">Daya.</a>' +
       '<div class="header-right">' +
+        '<label class="cur-pick"><span class="sr-only">Show prices in</span><select id="cur-select" aria-label="Show prices in">' + curOptions + '</select></label>' +
         '<button type="button" class="bag-btn" id="bag-open" aria-controls="bag-drawer" aria-expanded="false" aria-label="Your saved looks">' + ICON_BAG + '<span class="bag-count" id="bag-count" hidden>0</span></button>' +
       '</div>' +
     '</header>' +
-    '<div class="styling-strip"><a href="stylist.html#book">' + esc(t("stripText", "One-on-one personal styling and guidance")) + ' <span aria-hidden="true">→</span></a></div>' +
 
     '<div class="scrim" id="scrim" hidden></div>' +
 
     '<aside class="drawer drawer-left" id="menu-drawer" aria-label="Browse Daya" aria-hidden="true">' +
       '<div class="drawer-head"><p class="drawer-title">Browse</p><button type="button" class="icon-btn" data-close aria-label="Close menu">' + ICON_CLOSE + '</button></div>' +
       '<nav class="drawer-body" aria-label="Browse">' +
-        '<details class="acc"><summary>Body type</summary><ul class="acc-list">' + bodyLinks + '</ul></details>' +
-        '<details class="acc"><summary>Occasion</summary><ul class="acc-list">' + occLinks + '</ul></details>' +
-        '<a class="drawer-link" href="size-chart.html">Body size chart</a>' +
-        '<a class="drawer-link" href="calculator.html">Body calculator</a>' +
+        '<a class="drawer-link drawer-home" href="index.html"' + (PAGE === "home" ? ' aria-current="page"' : "") + '>Home</a>' +
+        acc("Occasion", "occasions.html", "All occasions", links(D.occasions, "occasions.html", "occasion")) +
+        acc("Era &amp; Vibe", "vibes.html", "All eras &amp; vibes", links(D.vibes || [], "vibes.html", "vibe")) +
+        acc("Body type", "body-types.html", "All body types", links(D.bodyTypes, "body-types.html", "body")) +
+        acc("Marketplace", "marketplace.html", "Every outfit", '<li><a href="marketplace.html?collection=deals">Best deals</a></li><li><a href="marketplace.html?collection=affordable">Most affordable</a></li>') +
         '<hr class="drawer-rule">' +
-        '<a class="drawer-link sub" href="looks.html?collection=best">Best looks</a>' +
-        '<a class="drawer-link sub" href="looks.html?collection=affordable">Most affordable</a>' +
-        '<a class="drawer-link sub" href="looks.html?collection=deals">Best deals</a>' +
-        '<a class="drawer-link sub" href="journal.html">Journal</a>' +
+        '<a class="drawer-link sub" href="calculator.html">Body calculator</a>' +
+        '<a class="drawer-link sub" href="size-chart.html">Body size chart</a>' +
+        '<a class="drawer-link sub" href="diary.html">Daya’s Diary</a>' +
+        '<a class="drawer-cta" href="stylist.html#book">Talk to a stylist <span aria-hidden="true">→</span></a>' +
       '</nav>' +
     '</aside>' +
 
@@ -185,18 +235,23 @@
       '</div>' +
     '</section>';
 
-  var showBand = document.body.getAttribute("data-page") === "looks";
+  var showBand = PAGE !== "stylist";
 
   var footerHTML =
     (showBand ? bandHTML : "") +
     '<footer class="site-footer"><div class="wrap foot-inner">' +
       '<p class="foot-logo">Daya</p>' +
       '<p class="foot-tag">' + esc(t("footerTag", "Womenswear. Style for your real life.")) + '</p>' +
-      '<nav class="foot-nav" aria-label="Footer"><a href="looks.html">Looks</a><a href="journal.html">Journal</a><a href="size-chart.html">Size chart</a><a href="calculator.html">Body calculator</a><a href="stylist.html">Stylist</a></nav>' +
+      '<nav class="foot-nav" aria-label="Footer"><a href="marketplace.html">Marketplace</a><a href="diary.html">Daya’s Diary</a><a href="size-chart.html">Size chart</a><a href="calculator.html">Body calculator</a><a href="stylist.html">Stylist</a></nav>' +
     '</div></footer>';
 
   document.body.insertAdjacentHTML("afterbegin", headerHTML + affirmHTML);
   document.body.insertAdjacentHTML("beforeend", footerHTML);
+
+  document.getElementById("cur-select").addEventListener("change", function (e) {
+    setCurPref(e.target.value);
+    location.reload();
+  });
 
   /* ---------- weekly affirmation: side tab + homepage line ---------- */
   Array.prototype.forEach.call(document.querySelectorAll("[data-affirm]"), function (n) { n.textContent = affText; });
@@ -281,7 +336,7 @@
       list.innerHTML =
         '<div class="bag-empty"><p class="bag-empty-title">Your bag is empty</p>' +
         '<p>Tap the bag icon on any look to save it here, then come back to compare or send them to a stylist.</p>' +
-        '<a class="btn btn-primary" href="looks.html">Browse looks</a></div>';
+        '<a class="btn btn-primary" href="marketplace.html">Browse the marketplace</a></div>';
       foot.hidden = true;
       return;
     }
@@ -293,7 +348,7 @@
       return '<li class="bag-item">' +
         '<img src="' + esc(img(l.image, 150)) + '" alt="" width="72" height="96" decoding="async">' +
         '<div class="bag-item-text"><p class="bag-item-name">' + esc(l.name) + '</p>' +
-        '<p class="bag-item-price">' + money(l.price, l.currency) + '</p>' +
+        '<p class="bag-item-price">' + price(l, "price") + '</p>' +
         '<p class="bag-item-links">' + view + '<button type="button" class="linklike" data-remove="' + esc(l.id) + '">Remove</button></p></div>' +
         '</li>';
     }).join("") + '</ul>';
@@ -356,8 +411,9 @@
 
   /* ---------- public bits for the page scripts ---------- */
   window.DayaUI = {
-    esc: esc, money: money, byId: byId, discount: discount,
-    occasionName: occasionName, bodyName: bodyName, img: img,
+    esc: esc, money: money, price: price, byId: byId, discount: discount,
+    occasionName: occasionName, bodyName: bodyName, vibeName: vibeName, img: img,
+    CURS: CURS, rateOf: rateOf, toNgn: toNgn, displayCurrency: displayCurrency, curPref: curPref,
     lookCard: lookCard, readBag: readBag,
     whatsappLink: function (text) {
       return CFG.whatsapp ? "https://wa.me/" + String(CFG.whatsapp).replace(/\D/g, "") + "?text=" + encodeURIComponent(text) : "";

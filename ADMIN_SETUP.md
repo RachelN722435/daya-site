@@ -1,7 +1,7 @@
 # Daya admin: setup (about 10 minutes, once)
 
 Your admin lives at **your-site-address/admin**, for example `daya-site.vercel.app/admin`.
-It edits your page text, looks, journal articles, weekly affirmation, WhatsApp/email,
+It edits your page text, looks, Daya’s Diary articles, weekly affirmation, WhatsApp/email,
 occasions and body types, and uploads photos.
 
 ## 1. Put the files on GitHub

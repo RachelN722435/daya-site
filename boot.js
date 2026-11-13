@@ -40,15 +40,26 @@
     if (saved && typeof saved === "object") {
       if (saved.config) D.config = Object.assign({}, D.config, saved.config);
       if (saved.text) D.text = Object.assign({}, D.text || {}, saved.text);
-      ["bodyTypes", "occasions", "looks", "articles"].forEach(function (k) {
+      ["bodyTypes", "occasions", "vibes", "looks", "articles"].forEach(function (k) {
         if (!Array.isArray(saved[k])) return;
-        if ((k === "bodyTypes" || k === "occasions") && !saved[k].length) return;
+        if ((k === "bodyTypes" || k === "occasions" || k === "vibes") && !saved[k].length) return;
         D[k] = saved[k];
       });
     }
     D.text = D.text || {};
     D.looks = (D.looks || []).filter(function (l) { return l && l.visible !== false; })
-      .map(function (l) { l.bodies = l.bodies || []; return l; });
+      .map(function (l) {
+        l.bodies = l.bodies || [];
+        var occ = Array.isArray(l.occasions) ? l.occasions.slice() : [];
+        if (l.occasion && occ.indexOf(l.occasion) === -1) occ.unshift(l.occasion);
+        l.occasions = occ;
+        if (!l.occasion && occ.length) l.occasion = occ[0];
+        l.vibes = Array.isArray(l.vibes) ? l.vibes : [];
+        l.colours = (Array.isArray(l.colours) ? l.colours : []).map(function (c) { return String(c).trim().toLowerCase(); }).filter(Boolean);
+        l.currency = l.currency || "NGN";
+        return l;
+      });
+    D.vibes = D.vibes || [];
     D.articles = (D.articles || []).filter(function (a) { return a && a.visible !== false; })
       .map(function (a) { a.body = a.body || []; return a; })
       .sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });

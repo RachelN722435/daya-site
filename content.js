@@ -3,9 +3,9 @@
 
    1. config        → weekly affirmation + stylist contact details
    2. bodyTypes     → the body type menu
-   3. occasions     → the occasion menu
+   3. occasions     → the occasion menu (vibes → era & vibe menu)
    4. looks         → the outfits shown across the site
-   5. articles      → the journal (short write-ups)
+   5. articles      → Daya\u2019s Diary (short write-ups)
 
    Once the admin (/admin) is set up, this file only provides the STARTING
    content. After you save in the admin, the admin's version is what visitors see.
@@ -39,10 +39,13 @@ window.DAYA = {
     ],
 
     /* PRICES AND IMAGES
-       usdToNgn    → rough rate used only to sort mixed dollar and naira prices
+       usdToNgn, gbpToNgn, eurToNgn → how many naira one dollar / pound / euro is worth.
+                     Used to convert prices when a visitor picks a currency. Update them in the admin.
        imageResize → set to true ONLY if your Supabase project is on a paid plan
                      that supports image resizing. It makes the site load much faster. */
     usdToNgn: 1500,
+    gbpToNgn: 1900,
+    eurToNgn: 1650,
     imageResize: false,
 
     /* STYLIST CONTACT — fill these in so "Book" and "Chat" work.
@@ -62,11 +65,14 @@ window.DAYA = {
     heroBannerImage: "",
     heroImage: "https://hcqzgqdezosaqfsadjyq.supabase.co/storage/v1/object/public/site-images/1794406655212-083v5l.jpg",
 
-    bodiesTitle: "Shop by body type",
-    bodiesSub: "Pick the shape closest to yours and see looks chosen to flatter it.",
-
-    occasionsTitle: "What are you dressing for?",
-    occasionsSub: "Choose the moment and we’ll show you looks that suit it.",
+    tile1Title: "Shop by Occasion",
+    tile1Image: "/tile-occasion.jpg",
+    tile2Title: "Shop by Era & Vibe",
+    tile2Image: "/tile-vibe.jpg",
+    tile3Title: "Shop by Body Type",
+    tile3Image: "/tile-body.jpg",
+    tile4Title: "Explore the Marketplace",
+    tile4Image: "/tile-market.jpg",
 
     whyTitle: "Why Daya",
     whySub: "Finding clothes that fit should never feel like guesswork.",
@@ -77,19 +83,17 @@ window.DAYA = {
     why3Title: "Straight to the shop",
     why3Text: "Every look comes with notes on fabric and styling, and links you to where you can buy it.",
 
-    bestTitle: "Best looks",
-    bestSub: "Our favourites right now. Each one is checked for fabric, fit and sizing before it’s listed.",
     affordableTitle: "Most affordable",
     affordableSub: "Great outfits that are kind to your budget, starting with the lowest price.",
     dealsTitle: "Best deals",
     dealsSub: "Looks with the biggest savings, from the largest discount down.",
     toolsTitle: "Find your fit",
-    toolsSub: "Two quick tools and a real person, so you know it will fit before you buy.",
+    toolsSub: "Two quick tools, so you know it will fit before you buy.",
 
-    journalTitle: "From the journal",
-    journalSub: "Short reads on fit, style and feeling good in what you wear.",
+    diaryTitle: "Daya\u2019s Diary",
+    diarySub: "Short, kind reads on fit, style and feeling good in what you wear. Tips, stories and the occasional pep talk.",
+    diaryBtn: "Read the diary",
 
-    stripText: "One-on-one personal styling and guidance",
     bandTitle: "Didn\u2019t find what you were looking for?",
     bandText: "That\u2019s okay. Tell us what you\u2019re dressing for and a stylist will find options that fit you.",
     bandButton: "Chat with a stylist",
@@ -126,11 +130,25 @@ window.DAYA = {
     { slug: "brunch", name: "Brunch" }
   ],
 
+  /* ---------- 3b. ERA & VIBE ---------- */
+  vibes: [
+    { slug: "vintage", name: "Vintage" },
+    { slug: "y2k", name: "Y2K" },
+    { slug: "cultural", name: "Cultural" },
+    { slug: "old-money", name: "Old money" },
+    { slug: "bohemian", name: "Bohemian" },
+    { slug: "streetwear", name: "Streetwear" },
+    { slug: "minimalist", name: "Minimalist" },
+    { slug: "70s-80s", name: "70s & 80s inspired" }
+  ],
+
   /* ---------- 4. LOOKS ----------
      price / was   → numbers, in the look's currency (was = the old price, for deals)
-     currency      → "NGN" or "USD"
+     currency      → "NGN", "USD", "GBP" or "EUR"
+     occasions     → every occasion slug the look suits (occasion = the main one)
+     vibes         → era & vibe slugs, e.g. ["old-money", "minimalist"]
+     colours       → e.g. ["black", "white"]
      bodies        → body type slugs this look suits
-     featured      → true = appears under "Best looks"
      url           → link to the retailer (leave "" if none; the card will offer "Ask a stylist")
      fabric        → a few words, e.g. "Satin, stretch" (shown on the look's page)
      styling       → a short note on how to style it (shown on the look's page)
@@ -144,9 +162,11 @@ window.DAYA = {
       name: "Embellished fringed maxi dress in teal",
       brand: "Asos Topshop",
       occasion: "date-night",
+      occasions: ["date-night", "events"],
+      vibes: ["bohemian"],
+      colours: ["teal"],
       bodies: ["hourglass", "pear", "tall"],
       price: 490, currency: "USD",
-      featured: true,
       url: "https://www.asos.com/topshop/topshop-premium-heavily-embellished-fringed-maxi-dress-in-teal-polka-dot/prd/210745025#colourWayId-210745031",
       fabric: "",    // e.g. "Satin, stretch" (a few words)
       styling: "",   // one or two short lines on how to style it
@@ -157,9 +177,11 @@ window.DAYA = {
       name: "Wide-leg trousers and shirt",
       brand: "",
       occasion: "workwear",
+      occasions: ["workwear", "everyday"],
+      vibes: ["minimalist", "old-money"],
+      colours: [],
       bodies: ["pear", "rectangle", "tall", "petite"],
       price: 55000, currency: "NGN",
-      featured: true,
       url: "",
       fabric: "",    // e.g. "Satin, stretch" (a few words)
       styling: "",   // one or two short lines on how to style it
@@ -170,9 +192,11 @@ window.DAYA = {
       name: "Statement dress",
       brand: "",
       occasion: "weddings",
+      occasions: ["weddings", "events"],
+      vibes: [],
+      colours: [],
       bodies: ["hourglass", "plus-size", "full-bust", "apple"],
       price: 85000, was: 110000, currency: "NGN",
-      featured: true,
       url: "",
       fabric: "",    // e.g. "Satin, stretch" (a few words)
       styling: "",   // one or two short lines on how to style it
@@ -183,9 +207,11 @@ window.DAYA = {
       name: "Evening look",
       brand: "",
       occasion: "date-night",
+      occasions: ["date-night", "party"],
+      vibes: [],
+      colours: [],
       bodies: ["hourglass", "rectangle", "athletic"],
       price: 70000, was: 90000, currency: "NGN",
-      featured: true,
       url: "",
       fabric: "",    // e.g. "Satin, stretch" (a few words)
       styling: "",   // one or two short lines on how to style it
@@ -196,9 +222,11 @@ window.DAYA = {
       name: "Relaxed everyday set",
       brand: "",
       occasion: "everyday",
+      occasions: ["everyday"],
+      vibes: ["minimalist"],
+      colours: [],
       bodies: ["apple", "rectangle", "plus-size", "petite"],
       price: 35000, currency: "NGN",
-      featured: false,
       url: "",
       fabric: "",    // e.g. "Satin, stretch" (a few words)
       styling: "",   // one or two short lines on how to style it
@@ -209,9 +237,11 @@ window.DAYA = {
       name: "Layered casual look",
       brand: "",
       occasion: "brunch",
+      occasions: ["brunch", "everyday"],
+      vibes: ["streetwear"],
+      colours: [],
       bodies: ["inverted-triangle", "athletic", "tall"],
       price: 45000, was: 52000, currency: "NGN",
-      featured: false,
       url: "",
       fabric: "",    // e.g. "Satin, stretch" (a few words)
       styling: "",   // one or two short lines on how to style it
@@ -222,9 +252,11 @@ window.DAYA = {
       name: "Structured event dress",
       brand: "",
       occasion: "events",
+      occasions: ["events", "weddings"],
+      vibes: [],
+      colours: [],
       bodies: ["hourglass", "pear", "full-bust"],
       price: 90000, was: 120000, currency: "NGN",
-      featured: false,
       url: "",
       fabric: "",    // e.g. "Satin, stretch" (a few words)
       styling: "",   // one or two short lines on how to style it

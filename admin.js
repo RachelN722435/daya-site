@@ -55,14 +55,18 @@
     if (saved && typeof saved === "object") {
       if (saved.config) c.config = Object.assign({}, c.config, saved.config);
       if (saved.text) c.text = Object.assign({}, c.text, saved.text);
-      ["bodyTypes", "occasions", "looks", "articles"].forEach((k) => {
+      ["bodyTypes", "occasions", "vibes", "looks", "articles"].forEach((k) => {
         if (!Array.isArray(saved[k])) return;
-        if ((k === "bodyTypes" || k === "occasions") && !saved[k].length) return;
+        if ((k === "bodyTypes" || k === "occasions" || k === "vibes") && !saved[k].length) return;
         c[k] = saved[k];
       });
     }
     c.looks.forEach((l) => {
       l.bodies = l.bodies || [];
+      l.occasions = Array.isArray(l.occasions) ? l.occasions.slice() : [];
+      if (l.occasion && !l.occasions.includes(l.occasion)) l.occasions.unshift(l.occasion);
+      l.vibes = Array.isArray(l.vibes) ? l.vibes : [];
+      l.colours = Array.isArray(l.colours) ? l.colours : [];
       l.currency = l.currency || "NGN";
       if (l.visible === undefined) l.visible = true;
     });
@@ -82,7 +86,7 @@
     return s;
   }
   function ensureSlugs() {
-    ["bodyTypes", "occasions"].forEach((k) => {
+    ["bodyTypes", "occasions", "vibes"].forEach((k) => {
       const list = S.content[k];
       list.forEach((x) => {
         if (!x.slug && x.name && x.name.trim()) {
@@ -92,7 +96,8 @@
     });
   }
   const today = () => new Date().toISOString().slice(0, 10);
-  const money = (n, cur) => (n || n === 0 ? (cur === "USD" ? "$" : "₦") + Number(n).toLocaleString("en-US") : "No price");
+  const SYM = { NGN: "₦", USD: "$", GBP: "£", EUR: "€" };
+  const money = (n, cur) => (n || n === 0 ? (SYM[cur] || "₦") + Number(n).toLocaleString("en-US") : "No price");
   const occName = (slug) => {
     const o = S.content.occasions.find((x) => x.slug === slug);
     return o ? o.name : "No occasion";
@@ -257,21 +262,24 @@
   const TEXT_GROUPS = [
     { title: "Top of the homepage", fields: [
       ["heroTitle", "Headline"], ["heroText", "Paragraph", 3], ["heroBtn1", "First button"], ["heroBtn2", "Second button"], ["heroBannerImage", "Top banner photo (wide, optional)", "image"], ["heroImage", "Hero photo (shown when there is no banner)", "image"] ] },
-    { title: "“Why Daya” section", fields: [
+    { title: "Homepage photo tiles", fields: [
+      ["tile1Title", "Tile 1 title (occasions)"], ["tile1Image", "Tile 1 photo", "image"],
+      ["tile2Title", "Tile 2 title (era & vibe)"], ["tile2Image", "Tile 2 photo", "image"],
+      ["tile3Title", "Tile 3 title (body type)"], ["tile3Image", "Tile 3 photo", "image"],
+      ["tile4Title", "Tile 4 title (marketplace)"], ["tile4Image", "Tile 4 photo", "image"] ] },
+    { title: "“Why Daya” pop-up", fields: [
       ["whyTitle", "Heading"], ["whySub", "Line under the heading"],
       ["why1Title", "Point 1 title"], ["why1Text", "Point 1 text", 2],
       ["why2Title", "Point 2 title"], ["why2Text", "Point 2 text", 2],
       ["why3Title", "Point 3 title"], ["why3Text", "Point 3 text", 2] ] },
+    { title: "Daya’s Diary box on the homepage", fields: [
+      ["diaryTitle", "Heading"], ["diarySub", "Short explanation", 3], ["diaryBtn", "Button"] ] },
     { title: "Homepage sections", fields: [
-      ["occasionsTitle", "Occasions: heading"], ["occasionsSub", "Occasions: line under it", 2],
-      ["bodiesTitle", "Body types: heading"], ["bodiesSub", "Body types: line under it", 2],
-      ["bestTitle", "Best looks: heading"], ["bestSub", "Best looks: line under it", 2],
       ["affordableTitle", "Most affordable: heading"], ["affordableSub", "Most affordable: line under it", 2],
-      ["toolsTitle", "Calculator and size chart: heading"], ["toolsSub", "Calculator and size chart: line under it", 2],
       ["dealsTitle", "Best deals: heading"], ["dealsSub", "Best deals: line under it", 2],
-      ["journalTitle", "Journal: heading"], ["journalSub", "Journal: line under it", 2] ] },
-    { title: "Stylist offers (shown on every page)", fields: [
-      ["stripText", "Line under the header"], ["bandTitle", "Bottom box: heading"], ["bandText", "Bottom box: text", 2], ["bandButton", "Bottom box: button"] ] },
+      ["toolsTitle", "Calculator and size chart: heading"], ["toolsSub", "Calculator and size chart: line under it", 2] ] },
+    { title: "Stylist box (shown at the bottom of every page)", fields: [
+      ["bandTitle", "Heading"], ["bandText", "Text", 2], ["bandButton", "Button"] ] },
     { title: "Footer", fields: [["footerTag", "Footer line"]] }
   ];
 
@@ -287,7 +295,7 @@
 
   /* ---------- tab: looks ---------- */
   function newLook() {
-    return { id: "look-" + Date.now().toString(36), name: "New look", brand: "", occasion: S.content.occasions[0] ? S.content.occasions[0].slug : "", bodies: [], price: 0, currency: "NGN", featured: false, visible: true, url: "", fabric: "", styling: "", image: "" };
+    return { id: "look-" + Date.now().toString(36), name: "New look", brand: "", occasion: S.content.occasions[0] ? S.content.occasions[0].slug : "", occasions: S.content.occasions[0] ? [S.content.occasions[0].slug] : [], vibes: [], colours: [], bodies: [], price: 0, currency: "NGN", visible: true, url: "", fabric: "", styling: "", image: "" };
   }
 
   function lookItem(l, i) {
@@ -298,7 +306,6 @@
     function paint() {
       title.textContent = l.name || "Untitled look";
       if (l.visible === false) title.append(h("span", { class: "a-badge" }, "Hidden"));
-      if (l.featured) title.append(h("span", { class: "a-badge" }, "Best look"));
       meta.textContent = occName(l.occasion) + " · " + money(l.price, l.currency) + (l.was ? " (was " + money(l.was, l.currency) + ")" : "");
       if (l.image) thumb.setAttribute("src", l.image); else thumb.removeAttribute("src");
     }
@@ -308,31 +315,36 @@
     d.addEventListener("toggle", () => { if (d.open) openItems.add(l.id); else openItems.delete(l.id); });
     d.append(h("summary", {}, thumb, h("div", {}, title, meta)));
 
-    const bodyBoxes = c.bodyTypes.map((b) => {
+    const boxes = (listKey, arrKey, after) => c[listKey].map((b) => {
       const input = h("input", { type: "checkbox" });
-      input.checked = l.bodies.includes(b.slug);
+      input.checked = l[arrKey].includes(b.slug);
       input.addEventListener("change", () => {
-        l.bodies = input.checked ? [...new Set([...l.bodies, b.slug])] : l.bodies.filter((x) => x !== b.slug);
+        l[arrKey] = input.checked ? [...new Set([...l[arrKey], b.slug])] : l[arrKey].filter((x) => x !== b.slug);
+        if (after) after();
         touch();
       });
       return h("label", { class: "a-check" }, input, h("span", {}, b.name));
     });
+    const bodyBoxes = boxes("bodyTypes", "bodies");
+    const vibeBoxes = boxes("vibes", "vibes");
+    const occBoxes = boxes("occasions", "occasions", () => { l.occasion = l.occasions[0] || ""; paint(); });
 
     d.append(h("div", { class: "a-item-body" },
       field("Name", () => l.name, (v) => { l.name = v; }, { onInput: paint }),
       h("div", { class: "a-row2" },
         field("Brand or shop (optional)", () => l.brand, (v) => { l.brand = v; }),
-        select("Occasion", c.occasions.map((o) => ({ value: o.slug, label: o.name })), () => l.occasion, (v) => { l.occasion = v; paint(); })),
+        field("Colours (optional)", () => l.colours.join(", "), (v) => { l.colours = v.split(",").map((x) => x.trim().toLowerCase()).filter(Boolean); }, { placeholder: "e.g. black, white", hint: "Separate with commas. Shoppers can filter by these." })),
+      h("div", { class: "a-field" }, h("span", { class: "a-label" }, "Occasions this suits"), h("p", { class: "a-hint" }, "Tick every one that fits. The first is shown on the card."), h("div", { class: "a-checks" }, occBoxes)),
+      h("div", { class: "a-field" }, h("span", { class: "a-label" }, "Era & vibe"), h("div", { class: "a-checks" }, vibeBoxes)),
       h("div", { class: "a-row2" },
         field("Price", () => l.price, (v) => { l.price = v === "" ? 0 : Number(v); }, { type: "number", inputmode: "decimal", step: "any", min: 0, onInput: paint }),
-        select("Currency", [{ value: "NGN", label: "Naira (₦)" }, { value: "USD", label: "Dollars ($)" }], () => l.currency, (v) => { l.currency = v; paint(); }, "“Most affordable” only ranks looks priced in naira.")),
+        select("Currency", [{ value: "NGN", label: "Naira (₦)" }, { value: "USD", label: "Dollars ($)" }, { value: "GBP", label: "Pounds (£)" }, { value: "EUR", label: "Euros (€)" }], () => l.currency, (v) => { l.currency = v; paint(); }, "Enter the price in the currency it is sold in. Visitors can switch currency on the site.")),
       field("Old price (optional)", () => (l.was ? l.was : ""), (v) => { if (v === "") delete l.was; else l.was = Number(v); }, { type: "number", inputmode: "decimal", step: "any", min: 0, onInput: paint, hint: "Fill this in only for a real discount. Looks with an old price appear under “Best deals”." }),
       h("div", { class: "a-field" }, h("span", { class: "a-label" }, "Body types this suits"), h("div", { class: "a-checks" }, bodyBoxes)),
       field("Shop link (optional)", () => l.url, (v) => { l.url = v.trim(); }, { type: "url", placeholder: "https://…", hint: "Where shoppers can buy it. Without a link, the button says “Ask a stylist”." }),
       field("Fabric (optional)", () => l.fabric, (v) => { l.fabric = v; }, { placeholder: "e.g. Satin, stretch" }),
       field("How to style it (optional)", () => l.styling, (v) => { l.styling = v; }, { rows: 3 }),
       imageField("Photo", () => l.image, (v) => { l.image = v; paint(); }),
-      check("Show under “Best looks” on the homepage", () => l.featured, (v) => { l.featured = v; paint(); }),
       check("Show this look on the site", () => l.visible !== false, (v) => { l.visible = v; paint(); }, "Untick to hide it without deleting it."),
       h("div", { class: "a-tools" },
         h("button", { type: "button", class: "a-btn small", disabled: i === 0, onclick: () => { swap(c.looks, i, -1); rerender(); touch(); } }, "Move up"),
@@ -346,7 +358,7 @@
   function looksTab(panel) {
     const c = S.content;
     ensureSlugs();
-    panel.append(card("Looks (" + c.looks.length + ")", "Tap a look to edit it. The first four looks marked “Best look” appear on the homepage.",
+    panel.append(card("Looks (" + c.looks.length + ")", "Tap a look to edit it. “Most affordable” and “Best deals” are worked out automatically from prices and old prices.",
       h("button", { type: "button", class: "a-btn primary", onclick: () => { const nl = newLook(); c.looks.unshift(nl); openItems.add(nl.id); rerender(); touch(); } }, "Add a look")));
     c.looks.forEach((l, i) => panel.append(lookItem(l, i)));
   }
@@ -383,7 +395,7 @@
       h("div", { class: "a-row2" },
         field("Date", () => a.date, (v) => { a.date = v; }, { type: "date", onInput: paint }),
         minsField),
-      field("Short summary", () => a.excerpt, (v) => { a.excerpt = v; }, { rows: 2, hint: "Shown on the journal page and under the title." }),
+      field("Short summary", () => a.excerpt, (v) => { a.excerpt = v; }, { rows: 2, hint: "Shown on the diary page and under the title." }),
       imageField("Photo (optional)", () => a.image, (v) => { a.image = v; }),
       bodyField,
       check("Published", () => a.visible !== false, (v) => { a.visible = v; paint(); }, "Untick to keep it as a draft that visitors can't see."),
@@ -395,7 +407,7 @@
 
   function journalTab(panel) {
     const c = S.content;
-    panel.append(card("Journal (" + c.articles.length + ")", "Short write-ups for your visitors. Newest first on the site.",
+    panel.append(card("Daya’s Diary (" + c.articles.length + ")", "Short write-ups for your visitors. Newest first on the site.",
       h("button", { type: "button", class: "a-btn primary", onclick: () => {
         const na = { id: "article-" + Date.now().toString(36), title: "New article", date: today(), readMins: 1, excerpt: "", image: "", body: [], visible: false };
         c.articles.unshift(na); openItems.add(na.id); rerender(); touch();
@@ -415,10 +427,11 @@
         h("button", { type: "button", class: "a-btn small", disabled: i === list.length - 1, "aria-label": "Move down", onclick: () => { swap(list, i, 1); rerender(); touch(); } }, "Down"),
         h("button", { type: "button", class: "a-btn small danger", onclick: () => {
           if (list.length <= 1) { alert("Keep at least one " + noun + "."); return; }
-          const users = c.looks.filter((l) => (key === "occasions" ? l.occasion === item.slug : l.bodies.includes(item.slug))).length;
+          const field_ = key === "occasions" ? "occasions" : key === "vibes" ? "vibes" : "bodies";
+          const users = c.looks.filter((l) => l[field_].includes(item.slug)).length;
           const warn = users ? "\n\n" + users + " look(s) use it. They'll stay on the site but lose this " + noun + "." : "";
           if (!confirm("Delete “" + (item.name || noun) + "”?" + warn)) return;
-          c.looks.forEach((l) => { if (key === "occasions") { if (l.occasion === item.slug) l.occasion = ""; } else l.bodies = l.bodies.filter((x) => x !== item.slug); });
+          c.looks.forEach((l) => { l[field_] = l[field_].filter((x) => x !== item.slug); if (key === "occasions") l.occasion = l.occasions[0] || ""; });
           list.splice(i, 1); rerender(); touch();
         } }, "Delete"));
       const photo = imageField("Photo (optional)", () => item.image, (v) => { item.image = v; });
@@ -430,8 +443,9 @@
 
   function listsTab(panel) {
     panel.append(
-      listCard("Occasions", "These appear as choices on the Looks page and in the Browse menu. Add a photo and it shows on the homepage tile and at the top of that occasion’s looks. Renaming keeps your looks linked.", "occasions", false, "occasion"),
-      listCard("Body types", "Each one gets a short description on the size chart page. Add a photo and it shows on the homepage tile, the size chart and at the top of that body type’s looks.", "bodyTypes", true, "body type"));
+      listCard("Occasions", "These appear as filters on the Occasions page and in the Browse menu. A photo shows at the top of the page when that occasion is chosen on its own. Renaming keeps your looks linked.", "occasions", false, "occasion"),
+      listCard("Era & vibe", "Shown on the Shop by Era & Vibe page and in the Browse menu. Tick the vibes on each look in the Looks tab.", "vibes", false, "vibe"),
+      listCard("Body types", "Each one gets a short description on the size chart page. Add a photo and it shows on the size chart and at the top of that body type’s page.", "bodyTypes", true, "body type"));
   }
 
   /* ---------- tab: affirmation + contact ---------- */
@@ -452,12 +466,14 @@
           onBlur: (el) => { const d = el.value.replace(/\D/g, ""); const fixed = /^0\d{10}$/.test(d) ? "234" + d.slice(1) : d; if (fixed !== el.value) { el.value = fixed; cfg.whatsapp = fixed; touch(); } } }),
         field("Email", () => cfg.email, (v) => { cfg.email = v.trim(); }, { type: "email", hint: "Used for booking requests if there is no WhatsApp number." })),
       card("Prices and photos", "",
-        field("Dollar to naira rate", () => cfg.usdToNgn, (v) => { cfg.usdToNgn = Number(v) || 1500; }, { type: "number", inputmode: "decimal", step: "any", min: 1, hint: "Only used to sort looks priced in different currencies." }),
+        field("1 dollar is worth how many naira?", () => cfg.usdToNgn, (v) => { cfg.usdToNgn = Number(v) || 1500; }, { type: "number", inputmode: "decimal", step: "any", min: 1, hint: "Used when a visitor switches currency, and to rank prices. Update these now and then." }),
+        field("1 pound is worth how many naira?", () => cfg.gbpToNgn, (v) => { cfg.gbpToNgn = Number(v) || 1900; }, { type: "number", inputmode: "decimal", step: "any", min: 1 }),
+        field("1 euro is worth how many naira?", () => cfg.eurToNgn, (v) => { cfg.eurToNgn = Number(v) || 1650; }, { type: "number", inputmode: "decimal", step: "any", min: 1 }),
         check("Serve smaller photos to make pages faster", () => cfg.imageResize, (v) => { cfg.imageResize = v; }, "Only turn this on if your Supabase plan includes image resizing, otherwise photos may not appear.")));
   }
 
   /* ---------- the editor shell ---------- */
-  const TABS = [["text", "Page text"], ["looks", "Looks"], ["journal", "Journal"], ["lists", "Occasions & body types"], ["settings", "Affirmation & contact"]];
+  const TABS = [["text", "Page text"], ["looks", "Looks"], ["journal", "Daya’s Diary"], ["lists", "Occasions & body types"], ["settings", "Affirmation & contact"]];
   const RENDER = { text: textTab, looks: looksTab, journal: journalTab, lists: listsTab, settings: settingsTab };
   let panelEl, statusEl, saveBtn, tabsEl;
 
