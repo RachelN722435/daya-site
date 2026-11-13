@@ -211,11 +211,10 @@
   var affText = currentAffirmation();
   var affirmHTML = affText
     ? '<aside class="affirm-side" aria-label="This week’s affirmation">' +
-        '<button type="button" class="affirm-tab" id="affirm-tab" aria-expanded="false" aria-controls="affirm-card">' +
-          '<span class="affirm-star" aria-hidden="true">✦</span><span class="affirm-tab-label">This week</span></button>' +
+        '<button type="button" class="affirm-tab" id="affirm-tab" aria-expanded="false" aria-controls="affirm-card" aria-label="Open this week’s affirmation">' +
+          '<span class="affirm-star" aria-hidden="true">✦</span></button>' +
         '<div class="affirm-card" id="affirm-card" role="note" hidden>' +
           '<button type="button" class="affirm-x" id="affirm-x" aria-label="Close affirmation">' + ICON_CLOSE + '</button>' +
-          '<p class="affirm-kicker">This week’s affirmation</p>' +
           '<p class="affirm-quote">' + esc(affText) + '</p>' +
         '</div>' +
       '</aside>'
